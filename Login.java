@@ -248,6 +248,7 @@ public class Login extends JFrame {
         // Add components to the second half
         JPanel bottomPanel = new JPanel(new GridBagLayout());
         bottomPanel.setBackground(Color.WHITE);
+    
 
         JLabel loginLabel = new JLabel("Login Here for FREE!");
                 
