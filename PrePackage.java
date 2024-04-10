@@ -28,7 +28,7 @@ public class PrePackage extends JFrame {
         panel1.setBackground(Color.red);
         panel2.setBackground(Color.green);
         panel4.setBackground(Color.BLACK);
-        panel5.setBackground(Color.blue);
+        panel5.setBackground(Color.BLACK);
 
         // panel4.setOpaque(false);
 
@@ -212,11 +212,14 @@ public class PrePackage extends JFrame {
         frame.add(panel4, BorderLayout.CENTER);
 
         // Panel 5 Layout
-        // panel5.setLayout(new BorderLayout());
-        // JLabel downTextLabel = new JLabel("Your text here");
-        // downTextLabel.setFont(new Font("Times New Roman", Font.PLAIN, 10));
-        // downTextLabel.setForeground(Color.WHITE);
-        // panel5.add(downTextLabel, BorderLayout.CENTER);
+        panel5.setLayout(new BorderLayout());
+
+        // Add label with text "Text 1" to the center of panel5
+        JLabel label = new JLabel("Made with Love at BITS Pilani");
+        label.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
+        panel5.add(label, BorderLayout.CENTER);
 
         frame.add(panel5, BorderLayout.SOUTH);
     }
