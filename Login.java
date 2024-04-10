@@ -80,8 +80,8 @@ public class Login extends JFrame {
                         String passwordFromDB = rs.getString("password");
                         // Do something with the passwordFromDB
                         if (passwordFromDB.equals(passwordText)) {
-                            PrePackage PrePackageFrame = new PrePackage();
-                            PrePackageFrame.setVisible(true);
+                            PlanPage PlanPageFrame = new PlanPage();
+                            PlanPageFrame.setVisible(true);
                             frame.dispose();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Incorrect Password", "Warning", JOptionPane.WARNING_MESSAGE);
