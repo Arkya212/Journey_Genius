@@ -106,6 +106,9 @@ public class Welcome extends JFrame{
                     frame.dispose();
                 } catch(IOException ex){
                     ex.printStackTrace();
+                } catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
             }
         });
@@ -178,8 +181,7 @@ public class Welcome extends JFrame{
                 }
             }
         });
-        
-        
+              
         subPanel3.setLayout(new BorderLayout());
         subPanel3.setBorder(BorderFactory.createEmptyBorder(0, 50, 20, 50));//Trick
         subPanel3.add(gitLabel, BorderLayout.SOUTH);
@@ -195,3 +197,5 @@ public class Welcome extends JFrame{
         frame.setVisible(true);
     }
 }
+
+

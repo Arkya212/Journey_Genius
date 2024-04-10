@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import java.util.*;
@@ -25,7 +29,12 @@ public class Login extends JFrame {
     public String finalemailString;
     public String finalpassString;
 
-    public Login() throws IOException {
+    public Login() throws IOException, SQLException {
+
+        Connection con = ConnectionProvider.getConnection();
+        String sql = "SELECT password FROM user WHERE Email_ID = ?";
+        PreparedStatement pstmt = con.prepareStatement(sql);
+
         frame = new JFrame("Login Form");
         email = new JTextField("Enter Email");
         password = new JPasswordField("Enter Password");
@@ -50,132 +59,59 @@ public class Login extends JFrame {
 
         backgroundPanel.setLayout(new GridLayout(1, 2));
 
-        //Adding Event Listeners
-        email.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                validateEmail();
-            }
-        
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                validateEmail();
-            }
-        
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                validateEmail();
-            }
-        
-            private void validateEmail() {
-                String emailText = email.getText().trim();
-                if (emailText.length() > 0 && !emailText.equals("Enter your email")) {
-                    if (validateMail(emailText)) {
-                        usernameError.setForeground(new Color(50, 168, 58));
-                        finalemailString = emailText;
-                        usernameError.setText("Email is valid");
-                    } else {
-                        usernameError.setForeground(Color.RED);
-                        usernameError.setText("Email is not valid");
-                    }
-                } else {
-                    usernameError.setText("");
-                }
-            }
-        });
-        
-
-        password.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                validatePasswordForBox(String.valueOf(password.getPassword()));
-            }
-        
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                validatePasswordForBox(String.valueOf(password.getPassword()));
-            }
-        
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                validatePasswordForBox(String.valueOf(password.getPassword()));
-            }
-        
-            private boolean validatePasswordForBox(String passwordText) {
-                passwordText = passwordText.trim();
-                if (passwordText.length() > 0 && !passwordText.equals("Enter your password")) {
-                    if (passwordText.length() < 8) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must be of length 8");
-                        return false;
-                    } else if (!passwordText.matches(".*[a-zA-Z]+.*")) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must contain alphabets");
-                        return false;
-                    } else if (!passwordText.matches(".*\\d.*")) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must contain digits");
-                        return false;
-                    } else {
-                        passwordError.setForeground(new Color(50, 168, 58));
-                        finalpassString = passwordText;
-                        passwordError.setText("Valid Password");
-                        return true;
-                    }
-                } else {
-                    passwordError.setText("");
-                    return false;
-                }
-            }
-        });
-
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String emailText = email.getText().trim();
                 String passwordText = String.valueOf(password.getPassword()).trim();
+                
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+                
+                try {
+                    con = ConnectionProvider.getConnection();
+                    String sql = "SELECT password FROM user WHERE Email_ID = ?";
+                    pstmt = con.prepareStatement(sql);
+                    pstmt.setString(1, emailText);
+                    rs = pstmt.executeQuery();
         
-                if (!validateMail(emailText)) {
-                    JOptionPane.showMessageDialog(frame, "Please enter a valid email.", "Warning", JOptionPane.WARNING_MESSAGE);
-                } else if (!validatePassword(passwordText)) {
-                    JOptionPane.showMessageDialog(frame, "Password must be of length 8 and contain both letters and digits.", "Warning", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Successfully Logged In !!!\nUsername: " + emailText + "\nPassword: " + passwordText);
-                    password.setText(null);
-                    email.setText(null);
-                    Welcome welcomeFrame = new Welcome(); // Show the existing Welcome screen
-                    welcomeFrame.setVisible(true);
-                    frame.dispose();
-                }
-            }
-        
-            private boolean validatePassword(String passwordText) {
-                passwordText = passwordText.trim();
-                if (passwordText.length() > 0 && !passwordText.equals("Enter your password")) {
-                    if (passwordText.length() < 8) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must be of length 8");
-                        return false;
-                    } else if (!passwordText.matches(".*[a-zA-Z]+.*")) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must contain alphabets");
-                        return false;
-                    } else if (!passwordText.matches(".*\\d.*")) {
-                        passwordError.setForeground(Color.RED);
-                        passwordError.setText("Password must contain digits");
-                        return false;
+                    if (rs.next()) {
+                        String passwordFromDB = rs.getString("password");
+                        // Do something with the passwordFromDB
+                        if (passwordFromDB.equals(passwordText)) {
+                            PrePackage PrePackageFrame = new PrePackage();
+                            PrePackageFrame.setVisible(true);
+                            frame.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Incorrect Password", "Warning", JOptionPane.WARNING_MESSAGE);
+                        }
                     } else {
-                        passwordError.setText("");
-                        return true;
+                        // Handle case when no user with the provided email is found
+                        JOptionPane.showMessageDialog(frame, "No user email found kindly sign-up or enter correct email.", "Warning", JOptionPane.WARNING_MESSAGE);
                     }
-                } else {
-                    passwordError.setText("");
-                    return false;
+                } catch (SQLException | IOException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    // Close ResultSet, PreparedStatement, and Connection in the finally block
+                    try {
+                        if (rs != null) {
+                            rs.close();
+                        }
+                        if (pstmt != null) {
+                            pstmt.close();
+                        }
+                        if (con != null) {
+                            con.close();
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
-
+        
+        
 
         resetButton.addActionListener(new ActionListener() {
             @Override
@@ -320,3 +256,136 @@ public class Login extends JFrame {
         return pattern.matcher(mail).matches();
     }
 }
+
+
+
+
+
+
+
+
+ //Adding Event Listeners
+        // email.getDocument().addDocumentListener(new DocumentListener() {
+        //     @Override
+        //     public void insertUpdate(DocumentEvent e) {
+        //         validateEmail();
+        //     }
+        
+        //     @Override
+        //     public void removeUpdate(DocumentEvent e) {
+        //         validateEmail();
+        //     }
+        
+        //     @Override
+        //     public void changedUpdate(DocumentEvent e) {
+        //         validateEmail();
+        //     }
+        
+        //     private void validateEmail() {
+        //         String emailText = email.getText().trim();
+        //         if (emailText.length() > 0 && !emailText.equals("Enter your email")) {
+        //             if (validateMail(emailText)) {
+        //                 usernameError.setForeground(new Color(50, 168, 58));
+        //                 finalemailString = emailText;
+        //                 usernameError.setText("Email is valid");
+        //             } else {
+        //                 usernameError.setForeground(Color.RED);
+        //                 usernameError.setText("Email is not valid");
+        //             }
+        //         } else {
+        //             usernameError.setText("");
+        //         }
+        //     }
+        // });
+        
+
+        // password.getDocument().addDocumentListener(new DocumentListener() {
+        //     @Override
+        //     public void insertUpdate(DocumentEvent e) {
+        //         validatePasswordForBox(String.valueOf(password.getPassword()));
+        //     }
+        
+        //     @Override
+        //     public void removeUpdate(DocumentEvent e) {
+        //         validatePasswordForBox(String.valueOf(password.getPassword()));
+        //     }
+        
+        //     @Override
+        //     public void changedUpdate(DocumentEvent e) {
+        //         validatePasswordForBox(String.valueOf(password.getPassword()));
+        //     }
+        
+        //     private boolean validatePasswordForBox(String passwordText) {
+        //         passwordText = passwordText.trim();
+        //         if (passwordText.length() > 0 && !passwordText.equals("Enter your password")) {
+        //             if (passwordText.length() < 8) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must be of length 8");
+        //                 return false;
+        //             } else if (!passwordText.matches(".*[a-zA-Z]+.*")) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must contain alphabets");
+        //                 return false;
+        //             } else if (!passwordText.matches(".*\\d.*")) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must contain digits");
+        //                 return false;
+        //             } else {
+        //                 passwordError.setForeground(new Color(50, 168, 58));
+        //                 finalpassString = passwordText;
+        //                 passwordError.setText("Valid Password");
+        //                 return true;
+        //             }
+        //         } else {
+        //             passwordError.setText("");
+        //             return false;
+        //         }
+        //     }
+        // });
+
+
+        // loginButton.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         String emailText = email.getText().trim();
+        //         String passwordText = String.valueOf(password.getPassword()).trim();
+        
+        //         if (!validateMail(emailText)) {
+        //             JOptionPane.showMessageDialog(frame, "Please enter a valid email.", "Warning", JOptionPane.WARNING_MESSAGE);
+        //         } else if (!validatePassword(passwordText)) {
+        //             JOptionPane.showMessageDialog(frame, "Password must be of length 8 and contain both letters and digits.", "Warning", JOptionPane.WARNING_MESSAGE);
+        //         } else {
+        //             JOptionPane.showMessageDialog(frame, "Successfully Logged In !!!\nUsername: " + emailText + "\nPassword: " + passwordText);
+        //             password.setText(null);
+        //             email.setText(null);
+        //             Welcome welcomeFrame = new Welcome(); // Show the existing Welcome screen
+        //             welcomeFrame.setVisible(true);
+        //             frame.dispose();
+        //         }
+        //     }
+        
+        //     private boolean validatePassword(String passwordText) {
+        //         passwordText = passwordText.trim();
+        //         if (passwordText.length() > 0 && !passwordText.equals("Enter your password")) {
+        //             if (passwordText.length() < 8) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must be of length 8");
+        //                 return false;
+        //             } else if (!passwordText.matches(".*[a-zA-Z]+.*")) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must contain alphabets");
+        //                 return false;
+        //             } else if (!passwordText.matches(".*\\d.*")) {
+        //                 passwordError.setForeground(Color.RED);
+        //                 passwordError.setText("Password must contain digits");
+        //                 return false;
+        //             } else {
+        //                 passwordError.setText("");
+        //                 return true;
+        //             }
+        //         } else {
+        //             passwordError.setText("");
+        //             return false;
+        //         }
+        //     }
+        // });
