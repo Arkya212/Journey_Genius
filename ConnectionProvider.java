@@ -12,7 +12,7 @@ public class ConnectionProvider {
 
                 String url = "jdbc:mysql://localhost:3306/itt";
                 String username = "root";
-                String password = "ark@sql#323!";
+                String password = "shrey";
                 con = DriverManager.getConnection(url, username, password);
                 if (con.isClosed()) {
                     System.out.println("Connection is Closed");
