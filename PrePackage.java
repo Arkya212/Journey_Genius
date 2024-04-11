@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import java.util.*;
@@ -13,7 +14,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class PrePackage extends JFrame {
-    public PrePackage() throws IOException {
+    public PrePackage(String text_name, int user_id) throws IOException {
         JFrame frame = new JFrame("Pre-Package Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
@@ -83,6 +84,23 @@ public class PrePackage extends JFrame {
         subPanel31.add(backButton);
         panel1.add(subPanel31, BorderLayout.EAST);
         frame.add(panel1, BorderLayout.NORTH);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instantiate the PrePackage frame
+                PlanPage PlanPageFrame;
+                try {
+                    PlanPageFrame = new PlanPage(user_id);
+                    PlanPageFrame.setVisible(true);
+                    frame.dispose();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+            }
+        });
 
         // Panel 2 Layout
         // SubPanel1 Layout

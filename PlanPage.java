@@ -20,6 +20,10 @@ import java.awt.event.FocusListener;
 public class PlanPage extends JFrame {
     public int numberOfItinerary = 6;
     private String text_city;
+    private String text_Start;
+    private String text_days;
+    private String text_name;
+
     public PlanPage(int user_id) throws IOException {
 
         JFrame frame = new JFrame("Plan Page");
@@ -177,6 +181,7 @@ public class PlanPage extends JFrame {
             }
         });
 
+
         // Create and add button "Know Your City"
         gbc.gridy = 2;
         JButton button = new JButton("Know Your City");
@@ -184,24 +189,165 @@ public class PlanPage extends JFrame {
         subPanel22.add(button, gbc);
 
         // Add vertical spacing between the two groups
-        gbc.gridy = 3;
-        gbc.insets = new Insets(50, 0, 0, 0); // Add top margin of 50 pixels
-        subPanel22.add(new JLabel(), gbc); // Add an empty label to create the spacing
+        // gbc.gridy = 3;
+        // gbc.insets = new Insets(50, 0, 0, 0); // Add top margin of 50 pixels
+        // subPanel22.add(new JLabel(), gbc); // Add an empty label to create the spacing
 
-        // Create and add label "Choose"
-        gbc.gridy = 4;
-        gbc.insets = new Insets(0, 0, 20, 0); // Reset bottom margin to 20 pixels
-        JLabel label2 = new JLabel("Choose your Package");
+
+        // Create and add label for "Start-date"
+
+
+        JLabel label2 = new JLabel("Start date");
         label2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         label2.setForeground(Color.WHITE);
         subPanel22.add(label2, gbc);
 
+        // Create and add text field for "start-date" 
+        gbc.gridy = 3;
+        JTextField textField2 = new JTextField("YYYY-MM-DD");
+        textField2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        textField2.setPreferredSize(new Dimension(200, 40));
+        subPanel22.add(textField2, gbc);
+
+        textField2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = textField2.getText();
+                System.out.println("Text entered: " + text);
+            }
+        });
+
+        // DocumentListener to capture date
+
+        textField2.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            private void updateText() {
+                text_Start = textField2.getText();
+            }
+        });
+
+
+
+        // Create and add label for "total days"
+        JLabel label3 = new JLabel("Number of days");
+        label3.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label3.setForeground(Color.WHITE);
+        subPanel22.add(label3, gbc);
+
+        // Create and add text field for "Your City" 
+        gbc.gridy = 4;
+        JTextField textField3 = new JTextField("Days Count");
+        textField3.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        textField3.setPreferredSize(new Dimension(200, 40));
+        subPanel22.add(textField3, gbc);
+
+        textField3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = textField3.getText();
+                System.out.println("Text entered: " + text);
+            }
+        });
+
+        // DocumentListener to capture changes in the text field
+
+        textField3.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            private void updateText() {
+                text_days = textField3.getText();
+            }
+        });
+
+        // Create and add label for "total days"
+        JLabel label4 = new JLabel("Itineary Name");
+        label4.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label4.setForeground(Color.WHITE);
+        subPanel22.add(label4, gbc);
+
+        // Create and add text field for "Your City" 
         gbc.gridy = 5;
+        JTextField textField4 = new JTextField("Name");
+        textField4.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        textField4.setPreferredSize(new Dimension(200, 40));
+        subPanel22.add(textField4, gbc);
+
+        textField4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = textField3.getText();
+                System.out.println("Text entered: " + text);
+            }
+        });
+
+        // DocumentListener to capture changes in the text field
+
+        textField4.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            private void updateText() {
+                text_name = textField4.getText();
+            }
+        });
+
+
+
+
+
+        // Create and add label "Choose"
+        gbc.gridy = 6;
+        gbc.insets = new Insets(0, 0, 20, 0); // Reset bottom margin to 20 pixels
+        JLabel label5 = new JLabel("Choose your Package");
+        label5.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label5.setForeground(Color.WHITE);
+        subPanel22.add(label5, gbc);
+
+        gbc.gridy = 7;
         JButton button1 = new JButton("Custom Package");
         button1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         subPanel22.add(button1, gbc);
 
-        gbc.gridy = 6;
+        gbc.gridy = 8;
         JButton button2 = new JButton("Pre-Package");
         button2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         gbc.gridwidth = 2;
@@ -257,7 +403,7 @@ public class PlanPage extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cityName = textField1.getText();
+                // String cityName = textField1.getText();
                 
                 // Query the database to retrieve the image path and description based on the city name
                 // Assuming you have a method to retrieve the image path and description from the database
@@ -301,7 +447,75 @@ public class PlanPage extends JFrame {
             }
         });
 
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instantiate the PrePackage frame
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+        
+                try {
+                    con = ConnectionProvider.getConnection();
+                    String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
+                    pstmt = con.prepareStatement(sql);
+                    pstmt.setString(1, text_name); // Assuming text_name is defined elsewhere
+                    pstmt.setString(2, text_Start); // Assuming text_Start is defined elsewhere
+                    pstmt.setString(3, text_days); // Assuming text_days is defined elsewhere
+                    pstmt.setString(4, text_city); // Assuming text_city is defined elsewhere
+                    pstmt.setInt(5, user_id); // Assuming user_id is defined elsewhere
+        
+                    // Execute the prepared statement
+                    int rowsAffected = pstmt.executeUpdate();
+                    if (rowsAffected > 0) {
+                        System.out.println("Data inserted successfully!");
+                    } else {
+                        System.out.println("Failed to insert data.");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        if (rs != null) rs.close();
+                        if (pstmt != null) pstmt.close();
+                        if (con != null) con.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                try {
 
+                    PrePackage prePackageFrame = new PrePackage(text_name, user_id );
+                    prePackageFrame.setVisible(true);
+                    frame.dispose();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+        
+
+
+
+        
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instantiate the PrePackage frame
+                CustomPage CustomPageFrame;
+                try {
+                    CustomPageFrame = new CustomPage();
+                    CustomPageFrame.setVisible(true);
+                    frame.dispose();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+            }
+        });
         
         
         
@@ -451,42 +665,25 @@ public class PlanPage extends JFrame {
         frame.add(panel5, BorderLayout.SOUTH);
         
                 
-
-        
-        button2.addActionListener(new ActionListener() {
+        backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Instantiate the PrePackage frame
-                PrePackage prePackageFrame;
+                Login LoginFrame;
                 try {
-                    prePackageFrame = new PrePackage();
-                    prePackageFrame.setVisible(true);
+                    LoginFrame = new Login();
+                    LoginFrame.setVisible(true);
                     frame.dispose();
-                } catch (IOException e1) {
+                } catch (IOException | SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
 
             }
         });
+          
 
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Instantiate the PrePackage frame
-                CustomPage CustomPageFrame;
-                try {
-                    CustomPageFrame = new CustomPage();
-                    CustomPageFrame.setVisible(true);
-                    frame.dispose();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
 
-            }
-        });
-        
 
 
 
