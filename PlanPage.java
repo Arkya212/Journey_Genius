@@ -19,10 +19,9 @@ import java.awt.event.FocusListener;
 
 public class PlanPage extends JFrame {
     public int numberOfItinerary = 6;
-    public String cityName = "Delhi";
-    public String receivedString = "Capital of Country";
-
+    private String text_city;
     public PlanPage(int user_id) throws IOException {
+
         JFrame frame = new JFrame("Plan Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
@@ -140,12 +139,43 @@ public class PlanPage extends JFrame {
         label1.setForeground(Color.WHITE);
         subPanel22.add(label1, gbc);
 
-        // Create and add text field for "Your City"
+        // Create and add text field for "Your City" 
         gbc.gridy = 1;
         JTextField textField1 = new JTextField("Your City");
         textField1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField1.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField1, gbc);
+
+        textField1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = textField1.getText();
+                System.out.println("Text entered: " + text);
+            }
+        });
+
+        // DocumentListener to capture changes in the text field
+
+        textField1.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateText();
+            }
+
+            private void updateText() {
+                text_city = textField1.getText();
+            }
+        });
 
         // Create and add button "Know Your City"
         gbc.gridy = 2;
@@ -181,6 +211,101 @@ public class PlanPage extends JFrame {
 
         frame.add(panel2, BorderLayout.WEST);
 
+
+        // Add Layout for Panel 4
+        // Create top and bottom panels
+        JPanel topPanel = new JPanel(null);
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+
+        topPanel.setBackground(Color.black);
+        bottomPanel.setBackground(Color.black);
+
+        topPanel.setPreferredSize(new Dimension(500, 330));
+        bottomPanel.setPreferredSize(new Dimension(210, 450));
+
+        ImageIcon cityImageIcon = new ImageIcon("images/quote.jpeg");
+        Image cityImg = cityImageIcon.getImage();
+        int cityLogoWidth = 510;
+        int cityLogoHeight = 320;
+        Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth, cityLogoHeight, Image.SCALE_SMOOTH);
+        ImageIcon cityResizedIcon = new ImageIcon(cityResizedImg);
+
+        JLabel cityImageLabel = new JLabel(cityResizedIcon);
+        cityImageLabel.setBounds(0, 0, cityLogoWidth, cityLogoHeight);
+        topPanel.add(cityImageLabel);
+
+        JLabel stringLabel = new JLabel("<html><center>Remember that happiness<br>is a way of travel,<br>not a destination.</center></html>");
+        stringLabel.setFont(new Font("Monospaced", Font.PLAIN, 20));
+        stringLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        stringLabel.setForeground(Color.WHITE);
+        bottomPanel.add(stringLabel, BorderLayout.CENTER);
+
+        Border thickBorder = BorderFactory.createLineBorder(Color.WHITE, 5);
+        Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+        Border compoundBorderTop = BorderFactory.createCompoundBorder(thickBorder, emptyBorder);
+        Border compoundBorderBottom = BorderFactory.createCompoundBorder(thickBorder, emptyBorder);
+        topPanel.setBorder(compoundBorderTop);
+        bottomPanel.setBorder(compoundBorderBottom);
+
+        panel4.setLayout(new BorderLayout());
+        panel4.add(topPanel, BorderLayout.NORTH);
+        panel4.add(bottomPanel, BorderLayout.SOUTH);
+
+        frame.add(panel4, BorderLayout.CENTER);
+
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cityName = textField1.getText();
+                
+                // Query the database to retrieve the image path and description based on the city name
+                // Assuming you have a method to retrieve the image path and description from the database
+                // You need to replace "getImagePathAndDescriptionFromDatabase" with the actual method
+                // that queries the database and returns the image path and description.
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+
+                try {
+                    con = ConnectionProvider.getConnection();
+                    String sql = "SELECT Image_URl, Information FROM city WHERE City_Name = ?";
+                    pstmt = con.prepareStatement(sql);
+                    pstmt.setString(1, text_city); // Use setString for setting String parameters
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        String imagePath = rs.getString("Image_URl");
+                        String description = rs.getString("Information");
+                        ImageIcon cityImageIcon = new ImageIcon(imagePath);
+                        Image cityImg = cityImageIcon.getImage();
+                        Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth, cityLogoHeight, Image.SCALE_SMOOTH);
+                        ImageIcon cityResizedIcon = new ImageIcon(cityResizedImg);
+                        cityImageLabel.setIcon(cityResizedIcon);
+                        stringLabel.setText("<html><center>" + description + "</center></html>");
+                    } else {
+                        cityImageLabel.setIcon(null);
+                        stringLabel.setText("<html><center>No data found for " + text_city + "</center></html>");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        if (rs != null) rs.close();
+                        if (pstmt != null) pstmt.close();
+                        if (con != null) con.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+        
+        
+        
+        
         /*
          * Purchased Itineary 
          * 
@@ -315,73 +440,6 @@ public class PlanPage extends JFrame {
          */
 
 
-
-
-
-
-
-
-
-
-
-
-
-        // Add Layout for Panel 4
-        // Create top and bottom panels
-        JPanel topPanel = new JPanel(null);
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-
-        // topPanel.setBackground(Color.red);
-        // bottomPanel.setBackground(Color.green);
-        topPanel.setBackground(Color.black);
-        bottomPanel.setBackground(Color.black);
-
-        // Set preferred sizes for top and bottom panels
-        topPanel.setPreferredSize(new Dimension(500, 330));
-        bottomPanel.setPreferredSize(new Dimension(210, 450));
-
-        // Load and resize the city image
-        ImageIcon cityImageIcon = new ImageIcon("images/delhi.jpg");
-        Image cityImg = cityImageIcon.getImage();
-        int cityLogoWidth = 510; // Adjust the width as desired
-        int cityLogoHeight = 320; // Adjust the height as desired
-        Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth, cityLogoHeight, Image.SCALE_SMOOTH);
-        ImageIcon cityResizedIcon = new ImageIcon(cityResizedImg);
-
-        JLabel cityImageLabel = new JLabel(cityResizedIcon);
-        // Set the position of the image (x, y)
-        cityImageLabel.setBounds(0, 0, cityLogoWidth, cityLogoHeight);
-        topPanel.add(cityImageLabel);
-        // ImageIcon cityImageIcon = new ImageIcon("images/delhi.jpg");
-        // // Image cityImg = cityImageIcon.getImage();
-        // // int cityLogoWidth = 500; // Adjust the width as desired
-        // // int cityLogoHeight = 400; // Adjust the height as desired
-        // // Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth,
-        // cityLogoHeight, Image.SCALE_SMOOTH);
-        // // ImageIcon cityResizedIcon = new ImageIcon(cityResizedImg);
-
-        // JLabel cityImageLabel = new JLabel(cityImageIcon);
-        // topPanel.add(cityImageLabel);
-
-        JLabel stringLabel = new JLabel(receivedString);
-        stringLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        stringLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        stringLabel.setForeground(Color.WHITE);
-        bottomPanel.add(stringLabel, BorderLayout.CENTER);
-
-        Border thickBorder = BorderFactory.createLineBorder(Color.WHITE, 5);
-        Border emptyBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-        Border compoundBorderTop = BorderFactory.createCompoundBorder(thickBorder, emptyBorder);
-        Border compoundBorderBottom = BorderFactory.createCompoundBorder(thickBorder, emptyBorder);
-        topPanel.setBorder(compoundBorderTop);
-        bottomPanel.setBorder(compoundBorderBottom);
-
-        panel4.setLayout(new BorderLayout());
-        panel4.add(topPanel, BorderLayout.NORTH);
-        panel4.add(bottomPanel, BorderLayout.SOUTH);
-
-        frame.add(panel4, BorderLayout.CENTER);
-
         // Layout for Panel 5
         panel5.setLayout(new BorderLayout());
         JLabel label = new JLabel("Made with Love at BITS Pilani");
@@ -391,6 +449,19 @@ public class PlanPage extends JFrame {
         panel5.add(label, BorderLayout.CENTER);
 
         frame.add(panel5, BorderLayout.SOUTH);
+        
+                
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public static JRadioButton generateRadioButton(String labelText) {
