@@ -7,6 +7,10 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import javax.swing.border.Border;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import java.util.*;
@@ -18,7 +22,7 @@ public class PlanPage extends JFrame {
     public String cityName = "Delhi";
     public String receivedString = "Capital of Country";
 
-    public PlanPage() throws IOException {
+    public PlanPage(int user_id) throws IOException {
         JFrame frame = new JFrame("Plan Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
@@ -177,7 +181,17 @@ public class PlanPage extends JFrame {
 
         frame.add(panel2, BorderLayout.WEST);
 
-        // Add Layout for Panel 3
+        /*
+         * Purchased Itineary 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+
         JPanel subHistPanel1 = new JPanel();
         JPanel subHistPanel2 = new JPanel();
         JPanel subButtonPanel = new JPanel();
@@ -199,14 +213,43 @@ public class PlanPage extends JFrame {
 
         subHistPanel2.setLayout(new GridLayout(numberOfItinerary, 1));
         ButtonGroup buttonGroup = new ButtonGroup();
-
-        for (int i = 1; i <= numberOfItinerary; i++) {
-            JRadioButton radioButton = generateRadioButton("Option " + i);
-            buttonGroup.add(radioButton);
-            JPanel optionPanel = new JPanel();
-            optionPanel.add(radioButton);
-            optionPanel.setBackground(Color.BLACK);
-            subHistPanel2.add(optionPanel);
+        
+        
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
+        try {
+            con = ConnectionProvider.getConnection();
+            String sql = "SELECT Itinerary_Name FROM Itinerary WHERE User_id = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, user_id);
+            rs = pstmt.executeQuery();
+        
+            // Iterate over the ResultSet to retrieve itinerary names
+            while (rs.next()) {
+                String itineraryName = rs.getString("Itinerary_Name");
+                // Generate radio button for each itinerary name
+                JRadioButton radioButton = generateRadioButton(itineraryName);
+                buttonGroup.add(radioButton);
+                JPanel optionPanel = new JPanel();
+                optionPanel.add(radioButton);
+                optionPanel.setBackground(Color.BLACK);
+                subHistPanel2.add(optionPanel);
+            }
+        
+        } catch (SQLException e) {
+            // Handle SQL exception appropriately, e.g., log or display error message
+            e.printStackTrace();
+        } finally {
+            // Close resources in the reverse order of their creation to prevent resource leaks
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         panel3.add(subHistPanel2, BorderLayout.CENTER);
@@ -217,6 +260,71 @@ public class PlanPage extends JFrame {
         subButtonPanel.add(submitButton, BorderLayout.CENTER);
         panel3.add(subButtonPanel, BorderLayout.SOUTH);
         frame.add(panel3, BorderLayout.EAST);
+
+        // Assuming this is where you define your submitButton
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the selected radio button's text (itinerary name)
+                Enumeration<AbstractButton> buttons = buttonGroup.getElements();
+                String selectedItineraryName = null;
+                while (buttons.hasMoreElements()) {
+                    AbstractButton button = buttons.nextElement();
+                    if (button.isSelected()) {
+                        selectedItineraryName = button.getText();
+                        break;
+                    }
+                }
+
+                // Query the database to retrieve the itinerary ID based on the selected itinerary name
+                int selectedItineraryID = -1; // Initialize with a default value
+                try (Connection con = ConnectionProvider.getConnection();
+                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID FROM Itinerary WHERE Itinerary_Name = ?")) {
+                    pstmt.setString(1, selectedItineraryName);
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        if (rs.next()) {
+                            selectedItineraryID = rs.getInt("Itinerary_ID");
+                        }
+                        if (selectedItineraryID != -1) {
+                            NextPage nextPage = new NextPage(selectedItineraryID);
+                            nextPage.setVisible(true);
+                            // Close or hide the current frame if needed
+                        } else {
+                            // Handle the case where the selected itinerary ID is not found
+                        }
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    // Handle SQL exception appropriately, e.g., log or display error message
+                }
+
+                // Redirect to the NextPage and pass the selected itinerary ID
+
+            }
+        });
+
+        /*
+         * 
+         * 
+         * 
+         * 
+         * purchased itineary over
+         */
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Add Layout for Panel 4
         // Create top and bottom panels

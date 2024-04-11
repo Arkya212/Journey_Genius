@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import java.util.*;
 import java.awt.Color;
@@ -31,9 +28,9 @@ public class Login extends JFrame {
 
     public Login() throws IOException, SQLException {
 
-        Connection con = ConnectionProvider.getConnection();
-        String sql = "SELECT password FROM user WHERE Email_ID = ?";
-        PreparedStatement pstmt = con.prepareStatement(sql);
+        // Connection con = ConnectionProvider.getConnection();
+        // String sql = "SELECT password FROM user WHERE Email_ID = ?";
+        // PreparedStatement pstmt = con.prepareStatement(sql);
 
         frame = new JFrame("Login Form");
         email = new JTextField("Enter Email");
@@ -64,30 +61,30 @@ public class Login extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String emailText = email.getText().trim();
                 String passwordText = String.valueOf(password.getPassword()).trim();
-                
+        
                 Connection con = null;
                 PreparedStatement pstmt = null;
                 ResultSet rs = null;
-                
+        
                 try {
                     con = ConnectionProvider.getConnection();
-                    String sql = "SELECT password FROM user WHERE Email_ID = ?";
+                    String sql = "SELECT user_id, password FROM user WHERE Email_ID = ?";
                     pstmt = con.prepareStatement(sql);
                     pstmt.setString(1, emailText);
                     rs = pstmt.executeQuery();
         
                     if (rs.next()) {
+                        int user_id = rs.getInt("User_ID");
                         String passwordFromDB = rs.getString("password");
-                        // Do something with the passwordFromDB
+        
                         if (passwordFromDB.equals(passwordText)) {
-                            PlanPage PlanPageFrame = new PlanPage();
-                            PlanPageFrame.setVisible(true);
+                            PlanPage planPageFrame = new PlanPage(user_id);
+                            planPageFrame.setVisible(true);
                             frame.dispose();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Incorrect Password", "Warning", JOptionPane.WARNING_MESSAGE);
                         }
                     } else {
-                        // Handle case when no user with the provided email is found
                         JOptionPane.showMessageDialog(frame, "No user email found kindly sign-up or enter correct email.", "Warning", JOptionPane.WARNING_MESSAGE);
                     }
                 } catch (SQLException | IOException ex) {
@@ -247,14 +244,14 @@ public class Login extends JFrame {
     }
 
     // The Event Listener Functions
-    private boolean validateMail(String mail) {
-        String regExp = "^[a-zA-Z0-9_+&*-]+(?:\\." +
-                "[a-zA-Z0-9_+&*-]+)*@" +
-                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-                "A-Z]{2,7}$";
-        Pattern pattern = Pattern.compile(regExp);
-        return pattern.matcher(mail).matches();
-    }
+    // private boolean validateMail(String mail) {
+    //     String regExp = "^[a-zA-Z0-9_+&*-]+(?:\\." +
+    //             "[a-zA-Z0-9_+&*-]+)*@" +
+    //             "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+    //             "A-Z]{2,7}$";
+    //     Pattern pattern = Pattern.compile(regExp);
+    //     return pattern.matcher(mail).matches();
+    // }
 }
 
 
