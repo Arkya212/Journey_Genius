@@ -198,12 +198,12 @@ public class PlanPage extends JFrame {
 
         gbc.gridy = 5;
         JButton button1 = new JButton("Custom Package");
-        button1.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        button1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         subPanel22.add(button1, gbc);
 
         gbc.gridy = 6;
-        JButton button2 = new JButton("Pre Package");
-        button2.setFont(new Font("Times New Roman", Font.PLAIN, 22));
+        JButton button2 = new JButton("Pre-Package");
+        button2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         gbc.gridwidth = 2;
         subPanel22.add(button2, gbc);
 
@@ -452,12 +452,41 @@ public class PlanPage extends JFrame {
         
                 
 
+        
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instantiate the PrePackage frame
+                PrePackage prePackageFrame;
+                try {
+                    prePackageFrame = new PrePackage();
+                    prePackageFrame.setVisible(true);
+                    frame.dispose();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
 
+            }
+        });
 
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Instantiate the PrePackage frame
+                CustomPage CustomPageFrame;
+                try {
+                    CustomPageFrame = new CustomPage();
+                    CustomPageFrame.setVisible(true);
+                    frame.dispose();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
 
-
-
-
+            }
+        });
+        
 
 
 

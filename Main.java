@@ -1,10 +1,9 @@
 import java.io.IOException;
 import java.sql.Connection;
-
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Establish database connection
         Connection con = ConnectionProvider.getConnection();
         if (con == null) {
@@ -15,5 +14,11 @@ public class Main {
         // Start the application
         Welcome welcomeFrame = new Welcome();
         welcomeFrame.setVisible(true);
+
+        // PrePackage PrePackageFrame = new PrePackage();
+        // PrePackageFrame.setVisible(true);
+
+        // PlanPage PlanPageFrame = new PlanPage(1);
+        // PlanPageFrame.setVisible(true);
     }
 }
