@@ -16,16 +16,29 @@ import java.awt.event.FocusListener;
 public class FinalPage extends JFrame {
     private JPanel buttonPanel;
     private JPanel contentPanel;
-    private static final int numberOfButtons = 5;
-    private static String stringItineraryFinal = "<html>Delhi is the worst City<br>and<br> Approx and wanna be Delhi people <br>are stinky just like south people</html>";
+    private static JLabel stringFinalItninerary;
+    private static Vector<String> itineraryData = new Vector<>();
+    private int priceOfTheDay=0;
+    JLabel priceLabel;
+    private static final int numberOfButtons = 7; // Main Variable that handles all the Items in this
+    private static String stringItineraryFinal = "<html>This Page Shows your Itinerary. <br> Click on each Day to see what you selected</html>";
+
+    // numberOfButtons, itineraryData (Update this with SQL Query for every Day),
+    // buttonText.substring(4) (Take Day informaion from this)
+    //Write Method to get the Price of the Day
 
     public FinalPage() throws IOException {
-        JFrame frame = new JFrame("Final Itinerary Page");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 800);
-		frame.setLayout(new BorderLayout(5, 3));
-		frame.setVisible(true);
+        Vector<String> itineraryData = new Vector<>();
+        itineraryData.add("Destination: Paris");
+        itineraryData.add("Duration: 3 days");
+        itineraryData.add("Hotel: ABC Hotel");
+        itineraryData.add("Attractions: Eiffel Tower, Louvre Museum");
 
+        JFrame frame = new JFrame("Final Itinerary Page");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1000, 800);
+        frame.setLayout(new BorderLayout(5, 3));
+        frame.setVisible(true);
 
         // Panel 1 Layout
         JPanel panel1 = new JPanel();
@@ -34,13 +47,13 @@ public class FinalPage extends JFrame {
         JPanel panel4 = new JPanel();
 
         panel1.setBackground(Color.red);
-		panel2.setBackground(Color.black);
+        panel2.setBackground(Color.black);
         panel3.setBackground(Color.black);
         panel4.setBackground(Color.black);
 
         panel1.setPreferredSize(new Dimension(1000, 100));
-		panel2.setPreferredSize(new Dimension(150, 100));
-		panel3.setPreferredSize(new Dimension(500, 100));
+        panel2.setPreferredSize(new Dimension(150, 100));
+        panel3.setPreferredSize(new Dimension(500, 100));
         panel4.setPreferredSize(new Dimension(1000, 30));
 
         panel1.setLayout(new BorderLayout());
@@ -51,7 +64,6 @@ public class FinalPage extends JFrame {
         subPanel11.setBackground(Color.BLACK);
         subPanel21.setBackground(Color.BLACK);
         subPanel31.setBackground(Color.BLACK);
-
 
         subPanel11.setPreferredSize(new Dimension(100, 80));
         subPanel21.setPreferredSize(new Dimension(100, 80));
@@ -87,60 +99,156 @@ public class FinalPage extends JFrame {
         backButton.setFont(new Font("Arial", Font.BOLD, 18));
         backButton.setForeground(Color.white);
         subPanel31.add(backButton);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(AppConfig.previousPage.equals("FinalCustomPage")){
+                    try {
+                        CustomPackage finalCustomPage = new CustomPackage();
+                    } catch (IOException exp){
+                        // Handle the IOException here
+                        exp.printStackTrace();
+                    }
+                }else{
+                    // try {
+                    //     PrePackage prePackage = new PrePackage();
+                    // } catch (IOException exp){
+                    //     // Handle the IOException here
+                    //     exp.printStackTrace();
+                    // }
+                }
+            }
+        });
         panel1.add(subPanel31, BorderLayout.EAST);
         frame.add(panel1, BorderLayout.NORTH);
-        
-        //Layout for Panel 2
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridBagLayout());
-        buttonPanel.setBackground(Color.black);
 
-        panel2.setLayout(new GridLayout(numberOfButtons, 1));
+        // Layout for Panel 2
+        // Create a new JPanel to hold the buttons
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridLayout(numberOfButtons, 1, 5, 5));
+        buttonsPanel.setBackground(Color.BLACK);
+
         ButtonGroup buttonGroup = new ButtonGroup();
-
-        for (int i = 1; i <= numberOfButtons; i++){
-            JButton button=createNumberButton(i);
-            button.setFont(new Font("TimesNewRoman", Font.PLAIN, 18));
-            buttonGroup.add(button);
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(button);
-            buttonPanel.setBackground(Color.BLACK);
-            panel2.add(buttonPanel);
+        for (int i = 1; i <= numberOfButtons; i++) {
+            JButton dayButton = createNumberButton(i);
+            dayButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
+            dayButton.setBackground(Color.BLACK);
+            dayButton.setForeground(Color.WHITE);
+            dayButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            dayButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JButton button = (JButton) e.getSource();
+                    String buttonText = button.getText();
+                    System.out.println("Day Number: " + buttonText.substring(4));
+                    //Write Method to get the Price of the Day
+                    priceLabel.setText("Price: ₹" + priceOfTheDay);
+                    updatePanel3WithRandomText();
+                }
+            });
+            buttonGroup.add(dayButton);
+            buttonsPanel.add(dayButton); // Add the button to the buttonsPanel
         }
 
+        // Create a new JPanel for the bottom panel
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.BLUE);
+
+        // Add the label to the bottom panel
+        priceLabel = new JLabel("Price: " + priceOfTheDay);
+        priceLabel.setForeground(Color.WHITE);
+        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adjust the padding as needed
+        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        bottomPanel.add(priceLabel, BorderLayout.SOUTH);
+        panel2.setLayout(new BorderLayout());
+        panel2.add(buttonsPanel, BorderLayout.CENTER);
+        panel2.add(bottomPanel, BorderLayout.SOUTH);
         frame.add(panel2, BorderLayout.WEST);
 
-        //Layout for Panel 3
+        // Layout for Panel 3
         panel3.setLayout(new BorderLayout());
-        JLabel stringFinalItninerary = new JLabel(stringItineraryFinal);
+
+        stringFinalItninerary = new JLabel(stringItineraryFinal);
         stringFinalItninerary.setFont(new Font("Monospaced", Font.PLAIN, 20));
         stringFinalItninerary.setHorizontalAlignment(SwingConstants.CENTER);
         stringFinalItninerary.setForeground(Color.WHITE);
         panel3.add(stringFinalItninerary, BorderLayout.CENTER);
+
+        JButton confirmButton = new JButton("Confirm Your Payment");
+        confirmButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        panel3.add(confirmButton, BorderLayout.SOUTH);
+
+        confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    FinancePage financePage = new FinancePage();
+                    frame.dispose();
+                } catch (IOException exp) {
+                    // Handle the IOException here
+                    exp.printStackTrace();
+                }
+            }
+        });
+
         frame.add(panel3, BorderLayout.CENTER);
 
         // Layout for Panel 4
-		panel4.setLayout(new BorderLayout());
-		JLabel label = new JLabel("Made with Love at BITS Pilani");
-		label.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-		label.setForeground(Color.WHITE);
-		label.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
-		panel4.add(label, BorderLayout.CENTER);
-		frame.add(panel4, BorderLayout.SOUTH);       
+        panel4.setLayout(new BorderLayout());
+        JLabel label = new JLabel("Made with Love at BITS Pilani");
+        label.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
+        panel4.add(label, BorderLayout.CENTER);
+        frame.add(panel4, BorderLayout.SOUTH);
     }
 
     public static JButton createNumberButton(int number) {
         JButton button = new JButton("Day " + number);
+
         return button;
     }
-    private void updateContentPanel(int number) {
-        contentPanel.removeAll();
-        JLabel label=new JLabel();
-        label.setText("getName()");
-        contentPanel.add(label);
 
-        contentPanel.revalidate();
-        contentPanel.repaint();
+    public static void updatePanel3WithRandomText() {
+        itineraryData.clear(); // Clear existing data
+        String destination = getRandomCity();
+        int price = getRandomPrice();
+        int duration = new Random().nextInt(5) + 1;
+        String hotel = getRandomHotel();
+        String attractions = getRandomAttractions();
+    
+        itineraryData.add("Destination: " + destination + " - Price: \u20B9" + price); // \u20B9 is the Unicode for the Rupee symbol
+        itineraryData.add("Duration: " + duration + " days");
+        itineraryData.add("Hotel: " + hotel);
+        itineraryData.add("Attractions: " + attractions);
+    
+        // Display updated itinerary data
+        StringBuilder randomText = new StringBuilder("<html>");
+        for (String data : itineraryData) {
+            randomText.append(data).append("<br>");
+        }
+        randomText.append("</html>");
+        stringFinalItninerary.setText(randomText.toString());
+    }
+    
+
+    public static String getRandomCity() {
+        String[] cities = { "Paris", "London", "New York", "Tokyo", "Rome", "Sydney" };
+        return cities[new Random().nextInt(cities.length)];
     }
 
+    public static String getRandomHotel() {
+        String[] hotels = { "ABC Hotel", "XYZ Resort", "Sunrise Inn", "Grand Plaza", "Ocean View Hotel" };
+        return hotels[new Random().nextInt(hotels.length)];
+    }
+
+    public static String getRandomAttractions() {
+        String[] attractions = { "Eiffel Tower", "Statue of Liberty", "Colosseum", "Taj Mahal", "Great Wall of China" };
+        return attractions[new Random().nextInt(attractions.length)];
+    }
+
+    public static int getRandomPrice() {
+        return new Random().nextInt(901) + 100;
+    }
+    
 }

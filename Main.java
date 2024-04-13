@@ -14,11 +14,5 @@ public class Main {
         // Start the application
         Welcome welcomeFrame = new Welcome();
         welcomeFrame.setVisible(true);
-
-        // PrePackage PrePackageFrame = new PrePackage();
-        // PrePackageFrame.setVisible(true);
-
-        // PlanPage PlanPageFrame = new PlanPage(1);
-        // PlanPageFrame.setVisible(true);
     }
 }

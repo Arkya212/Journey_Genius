@@ -1,0 +1,621 @@
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.util.regex.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
+import java.util.*;
+import java.util.Random;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+public class CustomPackage extends JFrame {
+    private int scheduleNumber = 1;
+    private static Vector<String> monuments;
+    private static Vector<String> restaurants;
+    private static Vector<String> cabs;
+    private static Vector<String> hotels;
+    private static Vector<String> misc;
+    private static Vector<Color> labelColors;
+    private static int numberOfTravelDays = 3;
+    private int priceOfItinerary = 0;
+    private String presentChoice = "Hi";
+    private JLabel label1;
+    private JLabel packageTitleLabel;
+    // names.getText() is the Variable that needs to be pushed into Days Table;
+    Color[] titleColors = { Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK };
+    // Color[] titleColors = { Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE,
+    // Color.PINK, Color.CYAN };
+    String[] titleLabels = { "Your Itinerary", "Hotels", "Restaurants", "Monuments", "Miscellaneous", "Cabs" };
+    private static Vector<Vector<String>> restaurantMatrix = new Vector<>();
+    private static Vector<Vector<String>> monumentsMatrix = new Vector<>();
+    private static Vector<Vector<String>> hotelsMatrix = new Vector<>();
+    private static Vector<Vector<String>> cabsMatrix = new Vector<>();
+    private static Vector<Vector<String>> miscMatrix = new Vector<>();
+
+    public CustomPackage() throws IOException {
+
+        restaurants = new Vector<>();
+        monuments = new Vector<>();
+        hotels = new Vector<>();
+        cabs = new Vector<>();
+        misc = new Vector<>();
+        labelColors = new Vector<>();
+
+        populateRestaurantMatrix();
+        populateMonumentsMatrix();
+        populateHotelsMatrix();
+        populateCabsMatrix();
+        populateMiscMatrix();
+
+        convertToHTMLFormat(restaurants, restaurantMatrix);
+        convertToHTMLFormat(monuments, monumentsMatrix);
+        convertToHTMLFormat(cabs, cabsMatrix);
+        convertToHTMLFormat(hotels, hotelsMatrix);
+        convertToHTMLFormat(misc, miscMatrix);
+
+        // for (String item : misc) {
+        //     System.out.println(item);
+        // }
+
+        labelColors = new Vector<>();
+        labelColors.clear();
+
+        // Create a Random object
+        Random random = new Random();
+
+        // Generate random colors based on the size of the restaurants vector
+        int sizeOfLabels = restaurants.size();
+        // System.out.println(sizeOfLabels);
+        for (int i = 0; i < restaurants.size(); i++) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            Color randomColor = new Color(red, green, blue);
+            labelColors.add(randomColor);
+        }
+
+        JFrame frame = new JFrame("Custom Itinerary Page");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1600, 800);
+        frame.setLayout(new BorderLayout(3, 3));
+        frame.setVisible(true);
+
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel4 = new JPanel();
+        JPanel panel5 = new JPanel();
+
+        panel1.setBackground(Color.red);
+        panel2.setBackground(Color.green);
+        panel4.setBackground(Color.magenta);
+        panel5.setBackground(Color.BLACK);
+
+        panel1.setPreferredSize(new Dimension(1000, 140));
+        panel2.setPreferredSize(new Dimension(255, 500));
+        panel4.setPreferredSize(new Dimension(200, 100));
+        panel5.setPreferredSize(new Dimension(1000, 20));
+
+        // Layout for Panel 1
+        panel1.setLayout(new BorderLayout());
+        panel1.setPreferredSize(new Dimension(1000, 140));
+
+        // Layout of subPanel 1
+        JPanel titleSubPanel1 = new JPanel();
+        titleSubPanel1.setBackground(Color.BLACK);
+        titleSubPanel1.setPreferredSize(new Dimension(1000, 100));
+        titleSubPanel1.setLayout(new BorderLayout(5, 5));
+
+        JPanel subPanel11 = new JPanel();
+        JPanel subPanel21 = new JPanel();
+        JPanel subPanel31 = new JPanel();
+        subPanel11.setBackground(Color.BLACK);
+        subPanel21.setBackground(Color.BLACK);
+        subPanel31.setBackground(Color.BLACK);
+        subPanel11.setPreferredSize(new Dimension(100, 100));
+        subPanel21.setPreferredSize(new Dimension(100, 100));
+        subPanel31.setPreferredSize(new Dimension(100, 100));
+        // subPanel 1 Layout
+        ImageIcon icon = new ImageIcon("images/logo2.png");
+        Image img = icon.getImage();
+        int logoWidth = 80;
+        int logoHeight = 80;
+        Image resizedImg = img.getScaledInstance(logoWidth, logoHeight, Image.SCALE_SMOOTH);
+        ImageIcon resizedIcon = new ImageIcon(resizedImg);
+        JLabel imageLabel = new JLabel(resizedIcon);
+        subPanel11.add(imageLabel);
+        titleSubPanel1.add(subPanel11, BorderLayout.WEST);
+
+        // Sub Panel 2 Layout
+        JLabel titleLabel = new JLabel("Custom Package Itenaries");
+        titleLabel.setFont(new Font("TimesNewRoman", Font.BOLD, 40));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        subPanel21.add(titleLabel);
+        titleSubPanel1.add(subPanel21, BorderLayout.CENTER);
+
+        // SubPanel 3 Layout
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(100, 90));
+        backButton.setBackground(Color.GRAY);
+        backButton.setFont(new Font("Arial", Font.BOLD, 18));
+        backButton.setForeground(Color.white);
+        subPanel31.add(backButton);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        //Come Here
+                        // try {
+                        //     PlanPage planPage = new PlanPage();
+                        //     frame.dispose();
+                        // } catch (IOException ex) {
+                        //     ex.printStackTrace();
+                        // }
+                    }
+                });
+            }
+        });
+        titleSubPanel1.add(subPanel31, BorderLayout.EAST);
+
+        panel1.add(titleSubPanel1, BorderLayout.NORTH);
+
+        // Layout of subPanel 2
+        JPanel titleSubPanel2 = new JPanel(new GridLayout(1, 6));
+        titleSubPanel2.setPreferredSize(new Dimension(0, 40));
+
+        for (int i = 0; i < titleLabels.length; i++) {
+            JPanel columnPanel = new JPanel(new BorderLayout());
+            columnPanel.setBackground(titleColors[i]);
+
+            JPanel buttonLabelPanel = new JPanel(new BorderLayout());
+
+            buttonLabelPanel.setOpaque(false);
+
+            if (i > 0) {
+                JButton upButton = new JButton("\u25B2");
+                upButton.setFont(new Font("Arial", Font.PLAIN, 14));
+
+                // Event Lister for Up Button:
+                final int index = i;
+                upButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("Up button clicked for label: " + titleLabels[index]);
+                    }
+                });
+
+                JButton downButton = new JButton("\u25BC");
+                downButton.setFont(new Font("Arial", Font.PLAIN, 14));
+                downButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("Down button clicked for label: " + titleLabels[index]);
+                    }
+                });
+
+                buttonLabelPanel.add(upButton, BorderLayout.WEST);
+
+                buttonLabelPanel.add(downButton, BorderLayout.EAST);
+            }
+
+            JLabel label = new JLabel(titleLabels[i], SwingConstants.CENTER);
+            label.setForeground(Color.WHITE);
+            label.setFont(new Font("TimesNewRoman", Font.BOLD, 18));
+
+            buttonLabelPanel.add(label, BorderLayout.CENTER);
+
+            columnPanel.add(buttonLabelPanel, BorderLayout.CENTER);
+
+            titleSubPanel2.add(columnPanel);
+        }
+
+        panel1.add(titleSubPanel2, BorderLayout.SOUTH);
+        frame.add(panel1, BorderLayout.NORTH);
+
+        // Layout for Panel 2
+        panel2.setLayout(new BorderLayout());
+        JPanel subPanel12 = new JPanel();
+        JPanel subPanel22 = new JPanel();
+        JPanel subPanel32 = new JPanel();
+
+        subPanel12.setBackground(Color.MAGENTA);
+        subPanel22.setBackground(Color.WHITE);
+        subPanel32.setBackground(Color.BLACK);
+
+        subPanel12.setPreferredSize(new Dimension(100, 100));
+        subPanel22.setPreferredSize(new Dimension(100, 80));
+        subPanel32.setPreferredSize(new Dimension(100, 70));
+
+        // subPanel12 Layout
+        packageTitleLabel = new JLabel(
+                "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
+                        + (numberOfTravelDays - scheduleNumber) + "<br> Itinerary Price: "
+                        + priceOfItinerary + "</center></html>");
+        packageTitleLabel.setFont(new Font("TimesNewRoman", Font.BOLD, 15));
+        packageTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        packageTitleLabel.setForeground(Color.WHITE);
+        packageTitleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        subPanel12.add(packageTitleLabel);
+        panel2.add(subPanel12, BorderLayout.NORTH);
+
+        // subPanel22 Layout
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        subPanel22.setLayout(gridBagLayout);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 5, 0);
+        gbc.anchor = GridBagConstraints.NORTH;
+
+        // System.out.println(presentChoice);
+        // Create and add labels above text fields
+        label1 = new JLabel("<html></html>"); // Initialize label1 here
+        label1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label1.setForeground(Color.BLACK);
+        subPanel22.add(label1, gbc);
+
+        panel2.add(subPanel22, BorderLayout.CENTER);
+
+        // subPanel32 Layout
+        JButton ResetButton = new JButton("Reset");
+        ResetButton.setPreferredSize(new Dimension(100, 50));
+        subPanel32.add(ResetButton);
+        panel2.add(subPanel32, BorderLayout.SOUTH);
+        frame.add(panel2, BorderLayout.WEST);
+
+        ResetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Component[] components = subPanel22.getComponents();
+                for (Component component : components) {
+                    if (component instanceof JLabel) {
+                        ((JLabel) component).setText("");
+                        priceOfItinerary = 0;
+                    }
+                }
+            }
+        });
+
+        JButton SubmitPreferenceButton = new JButton("<html><center>Confirm<br>Itinerary</center></html>");
+        SubmitPreferenceButton.setPreferredSize(new Dimension(100, 50));
+        subPanel32.add(SubmitPreferenceButton);
+        panel2.add(subPanel32, BorderLayout.SOUTH);
+
+        SubmitPreferenceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Component[] components = subPanel22.getComponents();
+                String labelText = "";
+                for (Component component : components) {
+                    if (component instanceof JLabel) {
+                        JLabel label = (JLabel) component;
+                        labelText = label.getText();
+                        System.out.println(labelText);
+                    }
+                }
+
+                if (labelText.equals("<html></html>") || labelText.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Itinerary is Empty!", "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                    System.out.println(label1.getText());
+                } else if ((numberOfTravelDays - scheduleNumber) == 0) {
+                    JOptionPane.showMessageDialog(null, "Itinerary created successfully.");
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            try {
+                                FinalPage finalPage = new FinalPage();
+                                AppConfig.previousPage = "FinalCustomPage";
+                                frame.dispose();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    });
+                } else {
+                    scheduleNumber++;
+                    packageTitleLabel.setText(
+                            "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
+                                    + (numberOfTravelDays - scheduleNumber) + "<br> Itinerary Price: "
+                                    + priceOfItinerary + "</center></html>");
+
+                    subPanel22.removeAll();
+                    subPanel22.revalidate();
+                    subPanel22.repaint();
+                }
+            }
+        });
+
+        frame.add(panel2, BorderLayout.WEST);
+
+        // Layout for Panel 4
+        JPanel subPanel14 = new JPanel();
+        JPanel subPanel24 = new JPanel();
+        JPanel subPanel34 = new JPanel();
+        JPanel subPanel44 = new JPanel();
+        JPanel subPanel45 = new JPanel();
+
+        subPanel14.setBackground(Color.RED);
+        subPanel24.setBackground(Color.WHITE);
+        subPanel34.setBackground(Color.BLACK);
+        subPanel44.setBackground(Color.MAGENTA);
+        subPanel45.setBackground(Color.BLACK);
+
+        panel4.setLayout(new GridLayout(0, 5, 0, 5));
+        // Layout for subPane14
+        // System.out.println(sizeOfLabels);
+
+        subPanel14 = addReserves(labelColors, hotels, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        panel4.add(subPanel14);
+
+        // Layout for subPane24
+        subPanel24 = addReserves(labelColors, restaurants, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        panel4.add(subPanel24);
+
+        // Layout for subPane34
+        subPanel34 = addReserves(labelColors, monuments, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        panel4.add(subPanel34);
+
+        // Layout for subPane44
+        subPanel44 = addReserves(labelColors, misc, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        panel4.add(subPanel44);
+
+        // Layout for subPane45
+        subPanel45 = addReserves(labelColors, cabs, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        panel4.add(subPanel45);
+        frame.add(panel4, BorderLayout.CENTER);
+
+        // Layout for Panel 5
+        panel5.setLayout(new BorderLayout());
+        JLabel label = new JLabel("Made with Love at BITS Pilani");
+        label.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel5.add(label, BorderLayout.CENTER);
+        frame.add(panel5, BorderLayout.SOUTH);
+    }
+
+    private JPanel addReserves(Vector<Color> color, Vector<String> names, int sizeOfLabels, GridBagLayout gridBagLayout,
+            GridBagConstraints gbc, JPanel subPanel22) {
+        JPanel subPanel = new JPanel(new GridLayout(sizeOfLabels, 1));
+        subPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+
+        for (int i = 0; i < sizeOfLabels; i++) {
+            final int index = i;
+            JPanel labelPanel = new JPanel(new BorderLayout());
+            labelPanel.setBackground(color.get(i));
+
+            // Extracting the required HTML tag
+            String htmlReceivedString = names.get(i);
+            String extractedInfo = extractInfo(htmlReceivedString);
+            JLabel label = new JLabel(extractedInfo);
+
+            label.setForeground(Color.BLACK);
+            label.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+            label.setBorder(BorderFactory.createEmptyBorder(10, 20, 0, 20));
+            labelPanel.add(label, BorderLayout.NORTH);
+
+            JPanel checkBoxPanel = new JPanel();
+            checkBoxPanel.setLayout(new GridLayout(1, 2));
+            checkBoxPanel.setBackground(color.get(i));
+            checkBoxPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+
+            JButton addButton = new JButton("Add to List");
+            addButton.setForeground(Color.white);
+            addButton.setBackground(Color.black);
+            addButton.setOpaque(true);
+
+            addButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String indexString = names.get(index);
+                    int startIndex = indexString.indexOf("<b>") + "<b>".length();
+                    int endIndex = indexString.indexOf("</b>");
+                    String extractedText = indexString.substring(startIndex, endIndex);
+                    presentChoice = extractedText;
+
+                    int priceStartIndex = indexString.indexOf("<br>", endIndex) + "<br>".length();
+
+                    int priceEndIndex = indexString.indexOf("<br>", priceStartIndex);
+                    if (priceEndIndex == -1) {
+                        priceEndIndex = indexString.indexOf("</html>", priceStartIndex);
+                    }
+
+                    String priceSubstring = indexString.substring(priceStartIndex, priceEndIndex);
+
+                    // Extract the integer from the price substring
+                    // int price = extractInteger(priceSubstring);
+                    String numberOnly = priceSubstring.replaceAll("[^0-9]", "");
+                    int price = Integer.parseInt(numberOnly);
+                    // Add the extracted integer to the priceOfItinerary variable
+                    priceOfItinerary += price;
+
+                    // Create a new label and add it to the subPanel22
+                    JLabel newLabel = new JLabel(extractedText);
+                    newLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+                    gbc.gridy++;
+                    subPanel22.add(newLabel, gbc);
+                    subPanel22.revalidate();
+                    subPanel22.repaint();
+
+                    packageTitleLabel.setText("<html><center> Day " + scheduleNumber
+                            + " Schedule <br> Number of Days Left: "
+                            + (numberOfTravelDays - scheduleNumber) + "<br> Itinerary Price: " + priceOfItinerary
+                            + "</center></html>");
+
+                    System.out.println(names.get(index));
+                    // System.out.println("Price added to priceOfItinerary: " + priceOfItinerary);
+                }
+            });
+            checkBoxPanel.add(addButton);
+
+            JButton showInfButton = new JButton("<html><center>Show<br>More Info</html>");
+            showInfButton.setForeground(Color.white);
+            showInfButton.setBackground(Color.black);
+            showInfButton.setOpaque(true);
+
+            showInfButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String indexString = names.get(index);
+                    String presentChoice = indexString;
+
+                    // Create a new JFrame to display more info
+                    JFrame moreInfoFrame = new JFrame("More Info");
+                    moreInfoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    moreInfoFrame.setSize(400, 300);
+                    moreInfoFrame.getContentPane().setBackground(Color.BLACK);
+                    moreInfoFrame.setLayout(new BorderLayout());
+
+                    // Create a JLabel with white text
+                    JLabel infoLabel = new JLabel(presentChoice);
+                    infoLabel.setForeground(Color.WHITE);
+                    infoLabel.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+                    infoLabel.setHorizontalAlignment(JLabel.CENTER);
+
+                    // Add the JLabel to the new JFrame's content pane
+                    moreInfoFrame.add(infoLabel, BorderLayout.CENTER);
+
+                    // Set the new JFrame visible
+                    moreInfoFrame.setVisible(true);
+                }
+            });
+
+            checkBoxPanel.add(showInfButton);
+
+            labelPanel.add(checkBoxPanel, BorderLayout.SOUTH);
+            subPanel.add(labelPanel, BorderLayout.CENTER);
+        }
+
+        return subPanel;
+    }
+
+    private static String extractInfo(String htmlString) {
+        // Define the regex pattern to match the string between <b> tag and the next two
+        // <br> tags
+        String pattern = "<b>(.*?)</b><br>(.*?)<br>(.*?)<br>";
+
+        // Compile the pattern
+        Pattern regex = Pattern.compile(pattern);
+
+        // Match the pattern against the input HTML string
+        Matcher matcher = regex.matcher(htmlString);
+
+        // If a match is found, extract and return the desired information
+        if (matcher.find()) {
+            // Group 1 contains the text between <b> tag
+            String name = matcher.group(1);
+            // Group 2 contains the text between the first <br> tag
+            String address = matcher.group(2);
+            // Group 3 contains the text between the second <br> tag
+            String city = matcher.group(3);
+            // Concatenate the extracted information
+            return "<html>" + "<b>" + name + "</b>" + "<br>" + address + "<br>" + city + "</html>";
+        } else {
+            // Return empty string if no match is found
+            return "";
+        }
+    }
+
+    private static void convertToHTMLFormat(Vector<String> attributeStrings, Vector<Vector<String>> attributeMatrix) {
+        attributeStrings.clear();
+        for (Vector<String> row : attributeMatrix) {
+            StringBuilder htmlItem = new StringBuilder("<html><b>" + row.get(0) + "</b><br>");
+            for (int i = 1; i < row.size(); i++) {
+                htmlItem.append(row.get(i)).append("<br>");
+            }
+            htmlItem.append("</html>");
+            attributeStrings.add(htmlItem.toString());
+        }
+    }
+
+    private static void populateRestaurantMatrix() {
+        Random random = new Random();
+        for (int i = 0; i < 4; i++) {
+            Vector<String> row = new Vector<>();
+            row.add("Restaurant" + (i + 1)); // Different names for each matrix
+            row.add("Price: " + (random.nextInt(500) + 500)); // Random price between 500 and 1000
+            row.add("Rating" + (random.nextInt(5) + 1)); // Random rating between 1 and 5
+            row.add("City" + (i + 1));
+            row.add("State" + (i + 1));
+            row.add("Phone" + (i + 1));
+            row.add("Email" + (i + 1));
+            row.add("Zip" + (i + 1));
+            restaurantMatrix.add(row);
+        }
+    }
+
+    private static void populateMonumentsMatrix() {
+        Random random = new Random();
+        for (int i = 0; i < 4; i++) {
+            Vector<String> row = new Vector<>();
+            row.add("Monument" + (i + 1)); // Different names for each matrix
+            row.add("Price: " + (random.nextInt(500) + 500)); // Random price between 500 and 1000
+            row.add("Rating" + (random.nextInt(5) + 1)); // Random rating between 1 and 5
+            row.add("City" + (i + 1));
+            row.add("State" + (i + 1));
+            row.add("Phone" + (i + 1));
+            row.add("Email" + (i + 1));
+            row.add("Zip" + (i + 1));
+            monumentsMatrix.add(row);
+        }
+    }
+
+    private static void populateHotelsMatrix() {
+        Random random = new Random();
+        for (int i = 0; i < 4; i++) {
+            Vector<String> row = new Vector<>();
+            row.add("Hotel" + (i + 1)); // Different names for each matrix
+            row.add("Price: " + (random.nextInt(500) + 500)); // Random price between 500 and 1000
+            row.add("Rating" + (random.nextInt(5) + 1)); // Random rating between 1 and 5
+            row.add("City" + (i + 1));
+            row.add("State" + (i + 1));
+            row.add("Phone" + (i + 1));
+            row.add("Email" + (i + 1));
+            row.add("Zip" + (i + 1));
+            hotelsMatrix.add(row);
+        }
+    }
+
+    private static void populateCabsMatrix() {
+        Random random = new Random();
+        for (int i = 0; i < 4; i++) {
+            Vector<String> row = new Vector<>();
+            row.add("Cab" + (i + 1)); // Different names for each matrix
+            row.add("Price: " + (random.nextInt(500) + 500)); // Random price between 500 and 1000
+            row.add("Rating" + (random.nextInt(5) + 1)); // Random rating between 1 and 5
+            row.add("City" + (i + 1));
+            row.add("State" + (i + 1));
+            row.add("Phone" + (i + 1));
+            row.add("Email" + (i + 1));
+            row.add("Zip" + (i + 1));
+            cabsMatrix.add(row);
+        }
+    }
+
+    private static void populateMiscMatrix() {
+        Random random = new Random();
+        for (int i = 0; i < 4; i++) {
+            Vector<String> row = new Vector<>();
+            row.add("Miscellaneous" + (i + 1)); // Different names for each matrix
+            row.add("Price: " + (random.nextInt(500) + 500)); // Random price between 500 and 1000
+            row.add("Rating" + (random.nextInt(5) + 1)); // Random rating between 1 and 5
+            row.add("City" + (i + 1));
+            row.add("State" + (i + 1));
+            row.add("Phone" + (i + 1));
+            row.add("Email" + (i + 1));
+            row.add("Zip" + (i + 1));
+            miscMatrix.add(row);
+        }
+    }
+}

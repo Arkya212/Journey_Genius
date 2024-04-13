@@ -504,10 +504,10 @@ public class PlanPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Instantiate the PrePackage frame
-                CustomPage CustomPageFrame;
+                CustomPackage CustomPageFrame;
                 try {
-                    CustomPageFrame = new CustomPage();
-                    CustomPageFrame.setVisible(true);
+                    CustomPageFrame = new CustomPackage();
+                    // CustomPageFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
