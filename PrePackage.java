@@ -1,20 +1,42 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
-import java.util.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PrePackage extends JFrame {
-    public PrePackage(String text_name, int user_id) throws IOException {
+    public PrePackage() throws IOException, SQLException {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        PreparedStatement pstmt2 = null;
+        ResultSet rs = null;
+        ResultSet rs2 = null;
+
+        con = ConnectionProvider.getConnection();
+        String sql = "SELECT Total_Travel_Days, Feedback, Price, Package_ID FROM pre_package WHERE City = ?";
+        String sql2 = "SELECT COUNT(*) AS ct FROM pre_package WHERE City = ?";
+        pstmt = con.prepareStatement(sql);
+        pstmt.setString(1, AppConfig.text_city);
+        pstmt2 = con.prepareStatement(sql2);
+        pstmt2.setString(1, AppConfig.text_city);
+        rs = pstmt.executeQuery();
+        rs2 = pstmt2.executeQuery();
+
+        int count = 0;
+        if (rs2.next()) {
+            count = rs2.getInt("ct");
+        }
+
+        if (count > 5) {
+            count = 5;
+        }
+
         JFrame frame = new JFrame("Pre-Package Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
@@ -31,12 +53,10 @@ public class PrePackage extends JFrame {
         panel4.setBackground(Color.BLACK);
         panel5.setBackground(Color.BLACK);
 
-        // panel4.setOpaque(false);
-
-        panel1.setPreferredSize(new Dimension(1000, 80));// Create a div
-        panel2.setPreferredSize(new Dimension(250, 500));// Create a div
-        panel4.setPreferredSize(new Dimension(200, 100));// Create a div
-        panel5.setPreferredSize(new Dimension(1000, 30));// Create a div
+        panel1.setPreferredSize(new Dimension(1000, 80)); // Create a div
+        panel2.setPreferredSize(new Dimension(250, 500)); // Create a div
+        panel4.setPreferredSize(new Dimension(200, 100)); // Create a div
+        panel5.setPreferredSize(new Dimension(1000, 30)); // Create a div
 
         // Panel 1 Layout
         panel1.setLayout(new BorderLayout());
@@ -91,14 +111,12 @@ public class PrePackage extends JFrame {
                 // Instantiate the PrePackage frame
                 PlanPage PlanPageFrame;
                 try {
-                    PlanPageFrame = new PlanPage(user_id);
+                    PlanPageFrame = new PlanPage();
                     PlanPageFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-
             }
         });
 
@@ -137,97 +155,105 @@ public class PrePackage extends JFrame {
         gbc.insets = new Insets(0, 0, 20, 0);
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Create and add labels above text fields
-        JLabel label1 = new JLabel("Your City");
-        label1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        label1.setForeground(Color.white);
-        subPanel22.add(label1, gbc);
-
-        gbc.gridy = 1;
-        JTextField textField1 = new JTextField("Your City");
-        textField1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        textField1.setPreferredSize(new Dimension(200, 40));
-        subPanel22.add(textField1, gbc);
-
-        gbc.gridy = 2;
-        JLabel label2 = new JLabel("Number of Travel Days");
-        label2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        label2.setForeground(Color.WHITE);
-        subPanel22.add(label2, gbc);
-
-        gbc.gridy = 3;
-        JTextField textField2 = new JTextField("Number of Travel Days");
-        textField2.setForeground(Color.BLACK);
-        textField2.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        textField2.setPreferredSize(new Dimension(200, 40));
-        subPanel22.add(textField2, gbc);
-
         panel2.add(subPanel22, BorderLayout.CENTER);
 
         // subPanel32 Layout
-        JButton SubmitPreferenceButton = new JButton("<html><center>Submit<br>Preference</center></html>");
-        SubmitPreferenceButton.setPreferredSize(new Dimension(100, 50));
-        subPanel32.add(SubmitPreferenceButton);
+        JButton ProceedButton = new JButton("<html><center>Proceed for <br> check out</center></html>");
+        ProceedButton.setPreferredSize(new Dimension(100, 50));
+        subPanel32.add(ProceedButton);
         panel2.add(subPanel32, BorderLayout.SOUTH);
 
-        JButton ShowMoreButton = new JButton("Show More");
-        ShowMoreButton.setPreferredSize(new Dimension(100, 50));
-        subPanel32.add(ShowMoreButton);
-        panel2.add(subPanel32, BorderLayout.SOUTH);
         frame.add(panel2, BorderLayout.WEST);
 
         // Panel 4 Layout
-        JPanel subPanel14 = new JPanel();
-        JPanel subPanel24 = new JPanel();
-        JPanel subPanel34 = new JPanel();
-        JPanel subPanel44 = new JPanel();
+        panel4.setLayout(new GridLayout(count, 1, 10, 20));
+        ButtonGroup buttonGroup = new ButtonGroup();
+        if (count == 0) {
+            JPanel subPanel = new JPanel();
+            subPanel.setLayout(new GridLayout(1, 1)); // Setting single column grid layout for the message
 
-        // subPanel14.setBackground(Color.RED);
-        // subPanel24.setBackground(Color.WHITE);
-        // subPanel34.setBackground(Color.BLACK);
-        // subPanel44.setBackground(Color.MAGENTA);
+            JLabel messageLabel = new JLabel("Sorry for the inconvenience but currently no tours are offered for the current selection.");
+            messageLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
 
-        subPanel14.setOpaque(false);
-        subPanel24.setOpaque(false);
-        subPanel34.setOpaque(false);
-        subPanel44.setOpaque(false);
+            subPanel.setLayout(new BorderLayout()); // Setting BorderLayout to center the message label
+            subPanel.add(messageLabel, BorderLayout.CENTER); // Adding the message label to the center of the subPanel
 
-        panel4.setLayout(new GridLayout(4, 1, 10, 20));
+            panel4.add(subPanel); // Adding the subPanel to the main panel4
+        } else {
+            // Create a ButtonGroup
+            for (int i = 0; i < count; i++) {
+                JPanel subPanel = new JPanel();
+                subPanel.setLayout(new GridLayout(1, 4));
 
-        //Layout for subPane14
-        subPanel14.setLayout(new GridLayout(1, 4));
-        addSubPanel(subPanel14, Color.LIGHT_GRAY, "Number of Days", true);
-        addSubPanel(subPanel14, Color.GREEN, "Travel Name", false);
-        addSubPanel(subPanel14, Color.YELLOW, "Price", false);
-        panel4.add(subPanel14, BorderLayout.CENTER);
+                // Fetch the data from rs
+                if (rs.next()) {
+                    int totalTravelDays = rs.getInt("Total_Travel_Days");
+                    String feedback = rs.getString("Feedback");
+                    double price = rs.getDouble("Price");
+                    int packid = rs.getInt("Package_ID");
 
-        panel4.add(subPanel14);
+                    // Determine the color scheme based on the current index
+                    Color color;
+                    switch (i % 5) {
+                        case 0:
+                            color = Color.LIGHT_GRAY;
+                            break;
+                        case 1:
+                            color = Color.RED;
+                            break;
+                        case 2:
+                            color = Color.LIGHT_GRAY;
+                            break;
+                        case 3:
+                            color = Color.RED;
+                            break;
+                        case 4:
+                            color = Color.GREEN;
+                            break;
+                        default:
+                            color = Color.LIGHT_GRAY;
+                            break;
+                    }
 
-        //Layout for subPane24
-        //Layout for subPane14
-        subPanel24.setLayout(new GridLayout(1, 4));
-        addSubPanel(subPanel24, Color.RED, "Number of Days", true);
-        addSubPanel(subPanel24, Color.LIGHT_GRAY, "Travel Name", false);
-        addSubPanel(subPanel24, Color.YELLOW, "Price", false);
-        panel4.add(subPanel24, BorderLayout.CENTER);
-        panel4.add(subPanel24);
+                    addSubPanel(subPanel, color, "Number of Days: " + totalTravelDays, true, buttonGroup, packid);
+                    addSubPanel(subPanel, Color.GREEN, "Travel Name: " + feedback, false, buttonGroup, -1);
+                    addSubPanel(subPanel, Color.YELLOW, "Price: $" + price, false, buttonGroup, -1);
 
-        //Layout for subPane34
-        subPanel34.setLayout(new GridLayout(1, 4));
-        addSubPanel(subPanel34, Color.LIGHT_GRAY, "Number of Days", true);
-        addSubPanel(subPanel34, Color.GREEN, "Travel Name", false);
-        addSubPanel(subPanel34, Color.YELLOW, "Price", false);
-        panel4.add(subPanel34, BorderLayout.CENTER);
-        panel4.add(subPanel34);
+                    panel4.add(subPanel); // Adding the subPanel to the main panel4
+                }
+            }
+        }
 
-        //Layout for subPane44
-        subPanel44.setLayout(new GridLayout(1, 4));
-        addSubPanel(subPanel44, Color.RED, "Number of Days", true);
-        addSubPanel(subPanel44, Color.GREEN, "Travel Name", false);
-        addSubPanel(subPanel44, Color.LIGHT_GRAY, "Price", false);
-        panel4.add(subPanel44, BorderLayout.CENTER);
-        panel4.add(subPanel44);
         frame.add(panel4, BorderLayout.CENTER);
+
+        AtomicInteger selectedPackId = new AtomicInteger(-1);
+
+        ProceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Enumeration<AbstractButton> buttons = buttonGroup.getElements();
+                while (buttons.hasMoreElements()) {
+                    AbstractButton button = buttons.nextElement();
+                    if (button.isSelected()) {
+                        AppConfig.selectedPackId = (int) button.getClientProperty("packid");
+                        System.out.println("Selected Pack ID: " + selectedPackId);
+        
+                        // Redirect to FinalPage
+                        try {
+                            FinalPage finalPage = new FinalPage();
+                            frame.getContentPane().removeAll(); // Remove all components from the frame
+                            frame.getContentPane().add(finalPage); // Add the FinalPage panel
+                            frame.revalidate(); // Revalidate the frame
+                            frame.repaint(); // Repaint the frame
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+        
 
         // Panel 5 Layout
         panel5.setLayout(new BorderLayout());
@@ -242,34 +268,39 @@ public class PrePackage extends JFrame {
         frame.add(panel5, BorderLayout.SOUTH);
     }
 
-    private void addSubPanel(JPanel parent, Color color, String labelText, boolean addCheckbox) {
+    private void addSubPanel(JPanel parent, Color color, String labelText, boolean addRadioButton, ButtonGroup buttonGroup, int packid) {
         JPanel subPanel = new JPanel(new BorderLayout(10, 0));
         subPanel.setBackground(color);
         subPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 5));
-    
+
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setOpaque(false);
-    
+
         JLabel label = new JLabel(labelText);
         label.setForeground(Color.BLACK);
         label.setFont(new Font("Times New Roman", Font.PLAIN, 25));
         label.setBorder(BorderFactory.createEmptyBorder(30, 10, 10, 0));
         labelPanel.add(label, BorderLayout.CENTER);
-    
-        if (addCheckbox) {
-            JPanel checkBoxPanel = new JPanel();
-            checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.X_AXIS)); // Use BoxLayout for centering
-            checkBoxPanel.setBackground(Color.BLACK);
-            checkBoxPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Add padding
-    
-            JCheckBox checkBox = new JCheckBox();    
-            checkBoxPanel.add(Box.createHorizontalGlue());
-            checkBoxPanel.add(checkBox);
-            checkBoxPanel.add(Box.createHorizontalGlue());
-    
-            subPanel.add(checkBoxPanel, BorderLayout.WEST);
+
+        if (addRadioButton) {
+            JPanel radioButtonPanel = new JPanel();
+            radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS)); // Use BoxLayout for centering
+            radioButtonPanel.setBackground(Color.BLACK);
+            radioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Add padding
+
+            JRadioButton radioButton = new JRadioButton();
+            radioButton.setOpaque(false); // Make the background transparent
+            radioButton.putClientProperty("packid", packid); // Set packid as client property
+
+            buttonGroup.add(radioButton); // Add the radio button to the ButtonGroup
+
+            radioButtonPanel.add(Box.createHorizontalGlue());
+            radioButtonPanel.add(radioButton);
+            radioButtonPanel.add(Box.createHorizontalGlue());
+
+            subPanel.add(radioButtonPanel, BorderLayout.WEST);
         }
-    
+
         subPanel.add(labelPanel, BorderLayout.CENTER);
         parent.add(subPanel);
     }

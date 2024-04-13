@@ -33,8 +33,8 @@ public class Login extends JFrame {
         // PreparedStatement pstmt = con.prepareStatement(sql);
 
         frame = new JFrame("Login Form");
-        email = new JTextField("Enter Email");
-        password = new JPasswordField("Enter Password");
+        email = new JTextField("john@example.com");
+        password = new JPasswordField("password1");
         loginButton = new JButton("LOGIN");
         usernameError = new JLabel();
         passwordError = new JLabel();
@@ -74,11 +74,11 @@ public class Login extends JFrame {
                     rs = pstmt.executeQuery();
         
                     if (rs.next()) {
-                        int user_id = rs.getInt("User_ID");
+                        AppConfig.User_id = rs.getInt("User_ID");
                         String passwordFromDB = rs.getString("password");
         
                         if (passwordFromDB.equals(passwordText)) {
-                            PlanPage planPageFrame = new PlanPage(user_id);
+                            PlanPage planPageFrame = new PlanPage();
                             planPageFrame.setVisible(true);
                             frame.dispose();
                         } else {

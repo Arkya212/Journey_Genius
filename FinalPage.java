@@ -28,6 +28,7 @@ public class FinalPage extends JFrame {
     //Write Method to get the Price of the Day
 
     public FinalPage() throws IOException {
+        
         Vector<String> itineraryData = new Vector<>();
         itineraryData.add("Destination: Paris");
         itineraryData.add("Duration: 3 days");

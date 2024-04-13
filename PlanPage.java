@@ -4,27 +4,20 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import javax.swing.border.Border;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import java.util.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+
 
 public class PlanPage extends JFrame {
     public int numberOfItinerary = 6;
-    private String text_city;
-    private String text_Start;
-    private String text_days;
-    private String text_name;
 
-    public PlanPage(int user_id) throws IOException {
+
+    public PlanPage() throws IOException {
 
         JFrame frame = new JFrame("Plan Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -177,7 +170,7 @@ public class PlanPage extends JFrame {
             }
 
             private void updateText() {
-                text_city = textField1.getText();
+                AppConfig.text_city = textField1.getText();
             }
         });
 
@@ -236,7 +229,7 @@ public class PlanPage extends JFrame {
             }
 
             private void updateText() {
-                text_Start = textField2.getText();
+                AppConfig.text_Start = textField2.getText();
             }
         });
 
@@ -248,7 +241,7 @@ public class PlanPage extends JFrame {
         label3.setForeground(Color.WHITE);
         subPanel22.add(label3, gbc);
 
-        // Create and add text field for "Your City" 
+                // Create and add text field for "Your City" 
         gbc.gridy = 4;
         JTextField textField3 = new JTextField("Days Count");
         textField3.setFont(new Font("Times New Roman", Font.PLAIN, 20));
@@ -259,12 +252,16 @@ public class PlanPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = textField3.getText();
-                System.out.println("Text entered: " + text);
+                try {
+                    int daysCount = Integer.parseInt(text);
+                    System.out.println("Integer entered: " + daysCount);
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid input. Please enter an integer.");
+                }
             }
         });
 
         // DocumentListener to capture changes in the text field
-
         textField3.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -282,7 +279,14 @@ public class PlanPage extends JFrame {
             }
 
             private void updateText() {
-                text_days = textField3.getText();
+                String text = textField3.getText();
+                try {
+                    int daysCount = Integer.parseInt(text);
+                    AppConfig.text_days = daysCount;
+                } catch (NumberFormatException ex) {
+                    // Handle the exception
+                    AppConfig.text_days = null ; // or set it to null or handle it as per your requirement
+                }
             }
         });
 
@@ -294,7 +298,7 @@ public class PlanPage extends JFrame {
 
         // Create and add text field for "Your City" 
         gbc.gridy = 5;
-        JTextField textField4 = new JTextField("Name");
+        JTextField textField4 = new JTextField("Trip Name");
         textField4.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField4.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField4, gbc);
@@ -326,7 +330,7 @@ public class PlanPage extends JFrame {
             }
 
             private void updateText() {
-                text_name = textField4.getText();
+                AppConfig.text_name = textField4.getText();
             }
         });
 
@@ -417,7 +421,7 @@ public class PlanPage extends JFrame {
                     con = ConnectionProvider.getConnection();
                     String sql = "SELECT Image_URl, Information FROM city WHERE City_Name = ?";
                     pstmt = con.prepareStatement(sql);
-                    pstmt.setString(1, text_city); // Use setString for setting String parameters
+                    pstmt.setString(1, AppConfig.text_city); // Use setString for setting String parameters
                     rs = pstmt.executeQuery();
 
                     if (rs.next()) {
@@ -431,7 +435,7 @@ public class PlanPage extends JFrame {
                         stringLabel.setText("<html><center>" + description + "</center></html>");
                     } else {
                         cityImageLabel.setIcon(null);
-                        stringLabel.setText("<html><center>No data found for " + text_city + "</center></html>");
+                        stringLabel.setText("<html><center>No data found for " + AppConfig.text_city + "</center></html>");
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
@@ -459,11 +463,11 @@ public class PlanPage extends JFrame {
                     con = ConnectionProvider.getConnection();
                     String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
                     pstmt = con.prepareStatement(sql);
-                    pstmt.setString(1, text_name); // Assuming text_name is defined elsewhere
-                    pstmt.setString(2, text_Start); // Assuming text_Start is defined elsewhere
-                    pstmt.setString(3, text_days); // Assuming text_days is defined elsewhere
-                    pstmt.setString(4, text_city); // Assuming text_city is defined elsewhere
-                    pstmt.setInt(5, user_id); // Assuming user_id is defined elsewhere
+                    pstmt.setString(1, AppConfig.text_name); // Assuming text_name is defined elsewhere
+                    pstmt.setString(2, AppConfig.text_Start); // Assuming text_Start is defined elsewhere
+                    pstmt.setInt(3, AppConfig.text_days); // Assuming text_days is defined elsewhere
+                    pstmt.setString(4, AppConfig.text_city); // Assuming text_city is defined elsewhere
+                    pstmt.setInt(5, AppConfig.User_id); // Assuming user_id is defined elsewhere
         
                     // Execute the prepared statement
                     int rowsAffected = pstmt.executeUpdate();
@@ -485,10 +489,13 @@ public class PlanPage extends JFrame {
                 }
                 try {
 
-                    PrePackage prePackageFrame = new PrePackage(text_name, user_id );
+                    PrePackage prePackageFrame = new PrePackage();
                     prePackageFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
@@ -503,12 +510,44 @@ public class PlanPage extends JFrame {
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Instantiate the PrePackage frame
-                CustomPackage CustomPageFrame;
+                
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+        
                 try {
-                    CustomPageFrame = new CustomPackage();
-                    // CustomPageFrame.setVisible(true);
-                    frame.dispose();
+                    con = ConnectionProvider.getConnection();
+                    String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
+                    pstmt = con.prepareStatement(sql);
+                    pstmt.setString(1, AppConfig.text_name); // Assuming text_name is defined elsewhere
+                    pstmt.setString(2, AppConfig.text_Start); // Assuming text_Start is defined elsewhere
+                    pstmt.setInt(3, AppConfig.text_days); // Assuming text_days is defined elsewhere
+                    pstmt.setString(4, AppConfig.text_city); // Assuming text_city is defined elsewhere
+                    pstmt.setInt(5, AppConfig.User_id); // Assuming user_id is defined elsewhere
+        
+                    // Execute the prepared statement
+                    int rowsAffected = pstmt.executeUpdate();
+                    if (rowsAffected > 0) {
+                        System.out.println("Data inserted successfully!");
+                    } else {
+                        System.out.println("Failed to insert data.");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        if (rs != null) rs.close();
+                        if (pstmt != null) pstmt.close();
+                        if (con != null) con.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                } 
+                // Instantiate the PrePackage frame
+                try {
+                    CustomPackage CustomPageFrame = new CustomPackage();
+                    CustomPageFrame.setVisible(true);
+                    frame.dispose(); 
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -562,7 +601,7 @@ public class PlanPage extends JFrame {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT Itinerary_Name FROM Itinerary WHERE User_id = ?";
             pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, user_id);
+            pstmt.setInt(1, AppConfig.User_id);
             rs = pstmt.executeQuery();
         
             // Iterate over the ResultSet to retrieve itinerary names
@@ -625,7 +664,7 @@ public class PlanPage extends JFrame {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
                         }
                         if (selectedItineraryID != -1) {
-                            NextPage nextPage = new NextPage(selectedItineraryID);
+                            CustomPackage nextPage = new CustomPackage();
                             nextPage.setVisible(true);
                             // Close or hide the current frame if needed
                         } else {
