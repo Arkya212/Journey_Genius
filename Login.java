@@ -79,7 +79,6 @@ public class Login extends JFrame {
         
                         if (passwordFromDB.equals(passwordText)) {
                             PlanPage planPageFrame = new PlanPage();
-                            planPageFrame.setVisible(true);
                             frame.dispose();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Incorrect Password", "Warning", JOptionPane.WARNING_MESSAGE);

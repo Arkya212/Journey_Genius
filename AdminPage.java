@@ -62,6 +62,15 @@ public class AdminPage extends JFrame {
         backButton.setFont(new Font("Arial", Font.BOLD, 10));
         backButton.setForeground(Color.white);
         subPanel31.add(backButton);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Welcome welcome = new Welcome();
+                frame.dispose();
+            }
+        });
+
         panel1.add(subPanel31, BorderLayout.EAST);
         frame.add(panel1, BorderLayout.NORTH);
 
@@ -80,17 +89,16 @@ public class AdminPage extends JFrame {
         logincab.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                System.out.println("cab");
-                AdminLoginCab cab = new AdminLoginCab(); // Ensure that AdminLoginCab()
-                frame.dispose();
-                // /structor is handled for
-                // any exceptions it might throw
+                    System.out.println("cab");
+                    AdminLoginCab cab = new AdminLoginCab(); // Ensure that AdminLoginCab()
+                    frame.dispose();
+                    // /structor is handled for
+                    // any exceptions it might throw
                 } catch (Exception ex) {
-                ex.printStackTrace(); // Handle the exception appropriately, this is just an
+                    ex.printStackTrace(); // Handle the exception appropriately, this is just an
                 }
             }
-        }
-    );
+        });
         panel.add(logincab, gbc);
 
         gbc.gridy++;
@@ -107,20 +115,29 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-        // Route the button click to the Admin.java clas
-        try {
-           AdminLoginHotel hotel = new AdminLoginHotel();
-           frame.dispose();
+                // Route the button click to the Admin.java clas
+                try {
+                    AdminLoginHotel hotel = new AdminLoginHotel();
+                    frame.dispose();
                 } catch (IOException ez) {
-            ez.printStackTrace();
-        }
+                    ez.printStackTrace();
+                }
 
-    }});
-    panel.add(loginhotel,gbc);
+            }
+        });
+        panel.add(loginhotel, gbc);
 
-    JPanel panel3 = new JPanel();panel3.setBackground(Color.blue);panel3.setPreferredSize(new Dimension(500,30));
-    JLabel label = new JLabel();label.setForeground(Color.green);label.setText("Made with love by 10 marks");panel3.add(label);
+        JPanel panel3 = new JPanel();
+        panel3.setBackground(Color.blue);
+        panel3.setPreferredSize(new Dimension(500, 30));
+        JLabel label = new JLabel();
+        label.setForeground(Color.green);
+        label.setText("Made with love by 10 marks");
+        panel3.add(label);
 
-    frame.add(panel1,BorderLayout.NORTH);frame.add(panel,BorderLayout.CENTER);frame.add(panel3,BorderLayout.SOUTH);
+        frame.add(panel1, BorderLayout.NORTH);
+        frame.add(panel, BorderLayout.CENTER);
+        frame.add(panel3, BorderLayout.SOUTH);
 
-}}
+    }
+}
