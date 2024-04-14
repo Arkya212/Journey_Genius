@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class CustomPackage extends JFrame {
 
-    private int scheduleNumber = 1;
+    private static int scheduleNumber = 1;
     private static Vector<String> monuments;
     private static Vector<String> restaurants;
     private static Vector<String> cabs;
@@ -22,6 +22,7 @@ public class CustomPackage extends JFrame {
     private static Vector<String> misc;
     private static Vector<Color> labelColors;
     private JLabel label1;
+    private static String extracted_day_itt;
     private JLabel packageTitleLabel;
 
     // AppConfig.priceOfItinerary = 0;
@@ -36,10 +37,33 @@ public class CustomPackage extends JFrame {
     private static Vector<Vector<String>> cabsMatrix = new Vector<>();
     private static Vector<Vector<String>> miscMatrix = new Vector<>();
 
-    public CustomPackage() throws IOException {
+    public CustomPackage() throws IOException, SQLException {
 
-        AppConfig.text_city = "delhi";
-        AppConfig.text_days = 4;
+        // AppConfig.text_city = "delhi";
+        // AppConfig.text_days = 4;
+        try {
+            Connection con = ConnectionProvider.getConnection();
+            String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
+            PreparedStatement pstmt2 = con.prepareStatement(sq);
+            pstmt2.setString(1, AppConfig.text_name);
+            ResultSet rs = pstmt2.executeQuery();
+        
+            if (rs.next()) {
+                AppConfig.itineary_ID = rs.getInt("Itinerary_ID");
+            }
+        
+            // Close resources
+            rs.close();
+            pstmt2.close();
+            con.close();
+        
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+
+        System.out.println(AppConfig.itineary_ID);
+
         AppConfig.priceOfItinerary = 0;
 
         restaurants = new Vector<>();
@@ -283,6 +307,7 @@ public class CustomPackage extends JFrame {
                 for (Component component : components) {
                     if (component instanceof JLabel) {
                         ((JLabel) component).setText("");
+                        extracted_day_itt = null;
                         AppConfig.priceOfItinerary = 0;
                     }
                 }
@@ -297,21 +322,57 @@ public class CustomPackage extends JFrame {
         SubmitPreferenceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                                            
                 Component[] components = subPanel22.getComponents();
                 String labelText = "";
                 for (Component component : components) {
                     if (component instanceof JLabel) {
                         JLabel label = (JLabel) component;
                         labelText = label.getText();
-                        System.out.println(labelText);
+                        // System.out.println(labelText);
                     }
                 }
 
                 if (labelText.equals("<html></html>") || labelText.equals("")) {
                     JOptionPane.showMessageDialog(null, "Itinerary is Empty!", "Warning",
                             JOptionPane.WARNING_MESSAGE);
-                    System.out.println(label1.getText());
+                    // System.out.println(label1.getText()); //Come here
                 } else if ((AppConfig.text_days - scheduleNumber) == 0) {
+                    packageTitleLabel.setText(
+                            "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
+                                    + (AppConfig.text_days - scheduleNumber) + "<br> Itinerary Price: "
+                                    + AppConfig.priceOfItinerary + "</center></html>");
+
+                    AppConfig.day_itt = "<html>" + extracted_day_itt + "</html>";
+                    System.out.println(correctHtml(AppConfig.day_itt, scheduleNumber)); //come here
+                    // System.out.println(AppConfig.day_itt);
+
+                    Connection con = ConnectionProvider.getConnection();
+
+                    try {
+                        // Selecting Cus_pack_ID from custom_day_package table
+                                    
+                        // Inserting values into cust_day table
+                        String insertSql = "INSERT INTO cust_day (Cus_pack_ID, Store) VALUES (?, ?)";
+                        PreparedStatement insertPstmt = con.prepareStatement(insertSql);
+                        insertPstmt.setInt(1, AppConfig.itineary_ID);
+                        insertPstmt.setString(2, AppConfig.day_itt);
+                        insertPstmt.executeUpdate();
+                        
+                        // Close resources
+                        insertPstmt.close();
+                        con.close();
+                    
+                    } catch (SQLException ep) {
+                        ep.printStackTrace();
+                    }
+
+                    //
+                    extracted_day_itt = null;
+                    subPanel22.removeAll();
+                    subPanel22.revalidate();
+                    subPanel22.repaint();
+                    scheduleNumber++;
                     JOptionPane.showMessageDialog(null, "Itinerary created successfully.");
 
                     SwingUtilities.invokeLater(new Runnable() {
@@ -319,6 +380,7 @@ public class CustomPackage extends JFrame {
                             try {
                                 FinalPage finalPage = new FinalPage();
                                 AppConfig.previousPage = "FinalCustomPage";
+                                AppConfig.day_itt = null;
                                 frame.dispose();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -327,15 +389,43 @@ public class CustomPackage extends JFrame {
 
                     });
                 } else {
-                    scheduleNumber++;
                     packageTitleLabel.setText(
                             "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
                                     + (AppConfig.text_days - scheduleNumber) + "<br> Itinerary Price: "
                                     + AppConfig.priceOfItinerary + "</center></html>");
 
+                    AppConfig.day_itt = "<html>" + extracted_day_itt + "</html>";
+                    System.out.println(correctHtml(AppConfig.day_itt, scheduleNumber)); //come here
+                    // System.out.println(AppConfig.day_itt);
+
+                    Connection con = ConnectionProvider.getConnection();
+
+                    try {
+                        // Selecting Cus_pack_ID from custom_day_package table
+                                    
+                        // Inserting values into cust_day table
+                        String insertSql = "INSERT INTO cust_day (Cus_pack_ID, Store) VALUES (?, ?)";
+                        PreparedStatement insertPstmt = con.prepareStatement(insertSql);
+                        insertPstmt.setInt(1, AppConfig.itineary_ID);
+                        insertPstmt.setString(2, AppConfig.day_itt);
+                        insertPstmt.executeUpdate();
+                        
+                        // Close resources
+                        insertPstmt.close();
+                        con.close();
+                    
+                    } catch (SQLException ep) {
+                        ep.printStackTrace();
+                    }
+
+
+
+                    //
+                    extracted_day_itt = null;
                     subPanel22.removeAll();
                     subPanel22.revalidate();
                     subPanel22.repaint();
+                    scheduleNumber++;
                 }
             }
         });
@@ -422,6 +512,7 @@ public class CustomPackage extends JFrame {
             addButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+
                     String indexString = names.get(index);
                     int startIndex = indexString.indexOf("<b>") + "<b>".length();
                     int endIndex = indexString.indexOf("</b>");
@@ -458,7 +549,11 @@ public class CustomPackage extends JFrame {
                             + AppConfig.priceOfItinerary
                             + "</center></html>");
 
-                    System.out.println(names.get(index));
+                    // System.out.println(names.get(index)); //Come here Shrey Baby
+                    extracted_day_itt = extracted_day_itt + "<br>" + names.get(index).replaceAll("<html>|</html>", "");
+                    // correctHtml(extracted_day_itt, scheduleNumber);
+                    // System.out.println(extracted_day_itt);
+                    // System.out.println(scheduleNumber);
                     // System.out.println("Price added to priceOfItinerary: " + priceOfItinerary);
                 }
             });
@@ -746,4 +841,10 @@ public class CustomPackage extends JFrame {
             }
         }
     }
+
+    public static String correctHtml(String input, int dayNumber) {
+        input = input.replaceAll("null", "Day" + dayNumber);
+        input = input.replaceAll("\\?", "Rupees "); // Unicode for ₹ symbol
+        return input;
+    }      
 }
