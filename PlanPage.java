@@ -548,7 +548,7 @@ public class PlanPage extends JFrame {
                     CustomPackage CustomPageFrame = new CustomPackage();
                     CustomPageFrame.setVisible(true);
                     frame.dispose(); 
-                } catch (IOException e1) {
+                } catch (IOException | SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }

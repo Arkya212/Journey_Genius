@@ -8,4 +8,5 @@ public class AppConfig {
     public static String text_city;
     public static String text_name;
     public static Integer priceOfItinerary ;
+    public static String day_itt;
 }
