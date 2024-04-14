@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.Random;
 
 public class CustomPackage extends JFrame {
-    
+
     private int scheduleNumber = 1;
     private static Vector<String> monuments;
     private static Vector<String> restaurants;
@@ -22,7 +22,7 @@ public class CustomPackage extends JFrame {
     private static Vector<String> misc;
     private static Vector<Color> labelColors;
     private JLabel label1;
-    private JLabel packageTitleLabel; 
+    private JLabel packageTitleLabel;
 
     // AppConfig.priceOfItinerary = 0;
     // names.getText() is the Variable that needs to be pushed into Days Table;
@@ -41,7 +41,6 @@ public class CustomPackage extends JFrame {
         AppConfig.text_city = "delhi";
         AppConfig.text_days = 4;
         AppConfig.priceOfItinerary = 0;
-
 
         restaurants = new Vector<>();
         monuments = new Vector<>();
@@ -63,7 +62,7 @@ public class CustomPackage extends JFrame {
         convertToHTMLFormat(misc, miscMatrix);
 
         // for (String item : misc) {
-        //     System.out.println(item);
+        // System.out.println(item);
         // }
 
         labelColors = new Vector<>();
@@ -155,12 +154,12 @@ public class CustomPackage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        //Come Here
+                        // Come Here
                         // try {
-                        //     PlanPage planPage = new PlanPage();
-                        //     frame.dispose();
+                        // PlanPage planPage = new PlanPage();
+                        // frame.dispose();
                         // } catch (IOException ex) {
-                        //     ex.printStackTrace();
+                        // ex.printStackTrace();
                         // }
                     }
                 });
@@ -241,7 +240,9 @@ public class CustomPackage extends JFrame {
         packageTitleLabel = new JLabel(
                 "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
                         + (AppConfig.text_days - scheduleNumber) + "<br> Itinerary Price: "
-                        + AppConfig.priceOfItinerary + "</center></html>");
+                        + AppConfig.priceOfItinerary
+                        + "</center></html>");
+        System.out.println(AppConfig.priceOfItinerary);
         packageTitleLabel.setFont(new Font("TimesNewRoman", Font.BOLD, 15));
         packageTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         packageTitleLabel.setForeground(Color.WHITE);
@@ -453,7 +454,8 @@ public class CustomPackage extends JFrame {
 
                     packageTitleLabel.setText("<html><center> Day " + scheduleNumber
                             + " Schedule <br> Number of Days Left: "
-                            + (AppConfig.text_days - scheduleNumber) + "<br> Itinerary Price: " + AppConfig.priceOfItinerary
+                            + (AppConfig.text_days - scheduleNumber) + "<br> Itinerary Price: "
+                            + AppConfig.priceOfItinerary
                             + "</center></html>");
 
                     System.out.println(names.get(index));
@@ -546,47 +548,51 @@ public class CustomPackage extends JFrame {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-    
+
         try {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT r.Name, r.Avg_Price_for_2, r.stars, t.opening, t.closing, r.Speciality FROM restaurants AS r INNER JOIN address AS a ON r.address_ID = a.address_ID INNER JOIN opening_closing_time AS t ON r.time_id = t.time_id WHERE a.City = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
-    
+
             int count = 0;
-            while (rs.next() && count <= 4) {
+            while (count < 4 && rs.next()) {
                 count++;
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Restaurant Name
-                row.add("Avg Price for 2: ₹" + rs.getDouble("Avg_Price_for_2")); // Avg Price for 2 in INR
+                row.add("Avg Price: ₹" + rs.getInt("Avg_Price_for_2")); // Avg Price for 2 in INR
                 row.add("Rating: " + rs.getInt("stars") + " Stars"); // Rating
                 row.add("Opening Time: " + rs.getString("opening")); // Opening Time
                 row.add("Closing Time: " + rs.getString("closing")); // Closing Time
                 row.add("Specialty: " + rs.getString("Speciality")); // Specialty
                 row.add("City: " + AppConfig.text_city); // City
-    
+
                 restaurantMatrix.add(row);
+                // System.out.println(count);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             // Close ResultSet, PreparedStatement, and Connection
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     private static void populateMonumentsMatrix() {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-    
+
         try {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT m.Name, m.Price, m.review, m.about, t.opening, t.closing FROM museums_and_monuments AS m INNER JOIN opening_closing_time AS t ON m.time_id = t.time_id WHERE m.City = ?";
@@ -594,11 +600,11 @@ public class CustomPackage extends JFrame {
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
             int count = 0;
-            while (rs.next() && count <= 4) {
+            while (rs.next() && count < 4) {
                 count++;
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Monument Name
-                row.add("Price: ₹" + rs.getDouble("Price")); // Price in INR
+                row.add("Price: ₹" + rs.getInt("Price")); // Price in INR
                 row.add("Review: " + rs.getString("review")); // Review
                 row.add("About: " + rs.getString("about")); // About
                 row.add("Opening Time: " + rs.getString("opening")); // Opening Time
@@ -610,20 +616,23 @@ public class CustomPackage extends JFrame {
         } finally {
             // Close the ResultSet, PreparedStatement, and Connection
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     private static void populateHotelsMatrix() {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-    
+
         try {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT h.Name, h.price, h.rating, h.amenities, h.telephone, h.review FROM hotel AS h INNER JOIN address AS a ON h.address_ID = a.address_ID WHERE a.City = ?";
@@ -631,11 +640,11 @@ public class CustomPackage extends JFrame {
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
             int count = 0;
-            while (rs.next() && count <= 4) {
+            while (rs.next() && count < 4) {
                 count++;
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Hotel Name
-                row.add("Price: ₹" + rs.getDouble("price")); // Price in INR
+                row.add("Price: ₹" + rs.getInt("price")); // Price in INR
                 row.add("Rating: " + rs.getInt("rating") + " Stars"); // Rating
                 row.add("Amenities: " + rs.getString("amenities")); // Amenities
                 row.add("Telephone: " + rs.getString("telephone")); // Telephone
@@ -647,35 +656,38 @@ public class CustomPackage extends JFrame {
         } finally {
             // Close the ResultSet, PreparedStatement, and Connection
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     private static void populateCabsMatrix() {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-    
+
         try {
             con = ConnectionProvider.getConnection();
-            String sql = "SELECT c.first_name, c.last_name, c.cab_number, c.cab_type, c.phone_number, c.price, c.review FROM cab AS c WHERE City = ?";
+            String sql = "SELECT c.first_name, c.last_name, c.price, c.cab_number, c.cab_type, c.phone_number,  c.review FROM cab AS c WHERE City = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
             int count = 0;
-            while (rs.next() && count <= 4) {
+            while (rs.next() && count < 4) {
                 count++;
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("first_name") + " " + rs.getString("last_name")); // Driver Name
+                row.add("Price: ₹" + rs.getInt("price"));
                 row.add("Cab Number: " + rs.getString("cab_number")); // Cab Number
                 row.add("Cab Type: " + rs.getString("cab_type")); // Cab Type
                 row.add("Phone: " + rs.getString("phone_number")); // Phone Number
-                row.add("Price: ₹" + rs.getDouble("price")); // Price in INR
                 row.add("Review: " + rs.getString("review")); // Review
                 cabsMatrix.add(row);
             }
@@ -684,20 +696,23 @@ public class CustomPackage extends JFrame {
         } finally {
             // Close the ResultSet, PreparedStatement, and Connection
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     private static void populateMiscMatrix() {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-    
+
         try {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT h.Name, h.price, h.review, t.opening, t.closing FROM miscellaneous AS h INNER JOIN address AS a ON h.address_ID = a.address_ID INNER JOIN opening_closing_time AS t ON h.time_id = t.time_id WHERE a.City = ?";
@@ -705,11 +720,11 @@ public class CustomPackage extends JFrame {
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
             int count = 0;
-            while (rs.next() && count <= 4) {
+            while (rs.next() && count < 4) {
                 count++;
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Name
-                row.add("Price: ₹" + rs.getDouble("price")); // Price in INR
+                row.add("Price: ₹ " + rs.getInt("price")); // Price in INR
                 row.add("Review: " + rs.getString("review")); // Review
                 row.add("Opening Time: " + rs.getString("opening")); // Opening Time
                 row.add("Closing Time: " + rs.getString("closing")); // Closing Time
@@ -720,12 +735,15 @@ public class CustomPackage extends JFrame {
         } finally {
             // Close the ResultSet, PreparedStatement, and Connection
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-}   
+}
