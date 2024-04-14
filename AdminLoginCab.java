@@ -46,7 +46,13 @@ public class AdminLoginCab extends JFrame {
     private JButton signUpButton = new JButton("Add Driver");
     private JButton resetButton = new JButton("Reset");
 
-    public AdminLoginCab() throws IOException {
+    public AdminLoginCab() throws IOException, SQLException {
+
+        Connection con = ConnectionProvider.getConnection();
+        String q = "INSERT INTO Cab (City, First_Name, Last_Name, Cab_Number, Cab_Type, Phone_Number, Price, Review) VALUES (?,?,?,?,?,?,?,?)";
+        PreparedStatement pstmt = con.prepareStatement(q);
+
+
         JFrame frame = new JFrame("Admin Access for Cab");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 800);
@@ -120,14 +126,14 @@ public class AdminLoginCab extends JFrame {
             public void focusLost(FocusEvent e) {
                 String mobileNumber = mobileField.getText().trim();
                 if (mobileField.getText().isEmpty()) {
-                    mobileField.setText("Mobile Number");
+                    mobileField.setText("Phone Number");
                     mobileField.setForeground(Color.gray);
                     mobileFieldFirstFocus = true;
                 }
 
                 if (!isValidMobileNumber(mobileNumber)) {
                     JOptionPane.showMessageDialog(null, "Invalid Mobile Number", "Error", JOptionPane.ERROR_MESSAGE);
-                    mobileField.setText("Mobile Number");
+                    mobileField.setText("Phone Number");
                 } else {
                     finalmobileFieldString = mobileNumber;
                 }
@@ -150,7 +156,7 @@ public class AdminLoginCab extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 if (sexField.getText().isEmpty()) {
-                    sexField.setText("Male/ Female/ Others");
+                    sexField.setText("City");
                     sexField.setForeground(Color.gray);
                     sexFieldFirstFocus = true;
                 }
@@ -446,7 +452,7 @@ public class AdminLoginCab extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
 
         // Add the "Sign Up For Free" text
-        JLabel signUpLabel = new JLabel("Add details of cab driver");
+        JLabel signUpLabel = new JLabel("Register your Cab Details");
         signUpLabel.setForeground(Color.WHITE);
         signUpLabel.setFont(new Font("Arial", Font.BOLD, 24));
         gbc.gridx = 0;
