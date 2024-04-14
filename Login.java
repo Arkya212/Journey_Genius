@@ -28,9 +28,9 @@ public class Login extends JFrame {
 
     public Login() throws IOException, SQLException {
 
-        // Connection con = ConnectionProvider.getConnection();
-        // String sql = "SELECT password FROM user WHERE Email_ID = ?";
-        // PreparedStatement pstmt = con.prepareStatement(sql);
+        Connection con = ConnectionProvider.getConnection();
+        String sql = "SELECT password FROM user WHERE Email_ID = ?";
+        PreparedStatement pstmt = con.prepareStatement(sql);
 
         frame = new JFrame("Login Form");
         email = new JTextField("john@example.com");
@@ -79,7 +79,6 @@ public class Login extends JFrame {
         
                         if (passwordFromDB.equals(passwordText)) {
                             PlanPage planPageFrame = new PlanPage();
-                            planPageFrame.setVisible(true);
                             frame.dispose();
                         } else {
                             JOptionPane.showMessageDialog(frame, "Incorrect Password", "Warning", JOptionPane.WARNING_MESSAGE);

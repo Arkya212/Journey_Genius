@@ -69,15 +69,51 @@ public class Welcome extends JFrame{
 
         verticalBox.add(panel2);
 
-        JButton loginButton = new JButton("Login Here");
+        JButton loginAsUserButton = new JButton("Login As User");
+        JButton loginAsAdminButton = new JButton("Login As Admin");
         JButton signUpButton = new JButton("Sign Up");
 
-        loginButton.setBackground(Color.DARK_GRAY);
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setPreferredSize(new Dimension(150, 40)); 
+        loginAsAdminButton.setBackground(Color.DARK_GRAY);
+        loginAsAdminButton.setForeground(Color.WHITE);
+        loginAsAdminButton.setPreferredSize(new Dimension(150, 40)); 
+        loginAsUserButton.setBackground(Color.DARK_GRAY);
+        loginAsUserButton.setForeground(Color.WHITE);
+        loginAsUserButton.setPreferredSize(new Dimension(150, 40)); 
         signUpButton.setBackground(Color.DARK_GRAY);
         signUpButton.setForeground(Color.WHITE);
         signUpButton.setPreferredSize(new Dimension(150, 40));
+
+        loginAsAdminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                try{
+                    AdminPage adminPage = new AdminPage();
+                    frame.dispose();
+                } catch(IOException ex){
+                    ex.printStackTrace();
+                } 
+                // catch (SQLException e1) {
+                //     e1.printStackTrace();
+                // }
+            }
+        });
+
+        loginAsUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                try{
+                    Login loginFrame = new Login();
+                    loginFrame.setVisible(true);
+                    frame.dispose();
+                } catch(IOException ex){
+                    ex.printStackTrace();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
 
         signUpButton.addActionListener(new ActionListener() {
             @Override
@@ -96,26 +132,11 @@ public class Welcome extends JFrame{
             }
         });
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                try{
-                    Login loginFrame = new Login();
-                    loginFrame.setVisible(true);
-                    frame.dispose();
-                } catch(IOException ex){
-                    ex.printStackTrace();
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-            }
-        });
-
-        panel3.add(loginButton);
-        panel3.add(Box.createHorizontalStrut(100)); // Add spacing between buttons
-        panel3.add(signUpButton);
+        panel3.add(loginAsAdminButton);
+        panel3.add(Box.createHorizontalStrut(100));
+        panel3.add(signUpButton);        
+        panel3.add(Box.createHorizontalStrut(100));
+        panel3.add(loginAsUserButton);
 
         verticalBox.add(panel3);
 
