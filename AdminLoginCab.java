@@ -20,38 +20,36 @@ public class AdminLoginCab extends JFrame {
     private JTextField firstName = new JTextField("Enter your First Name");
     private JTextField lastName = new JTextField("Enter your Last Name");
     private JTextField mobileField = new JTextField("Mobile Number");
-    private JTextField sexField = new JTextField("Male/ Female/ Others");
-    private JTextField dobField = new JTextField("YYYY-MM-DD");
-    private JTextField cityField = new JTextField("City you live in");
-    private JTextField email = new JTextField("Email Address");
+    private JTextField Cab_Number = new JTextField("Cab Number");
+    private JTextField Price = new JTextField("Price in rupees");
+    private JTextField cityField = new JTextField("City you ride in ");
+    private JTextField Review = new JTextField("Review");
     private JTextField CabType = new JTextField("Car Type");
     private boolean firstNameFirstFocus = true;
     private boolean lastNameFirstFocus = true;
     private boolean mobileFieldFirstFocus = true;
-    private boolean sexFieldFirstFocus = true;
-    private boolean dobFieldFirstFocus = true;
+    private boolean Cab_NumberFirstFocus = true;
+    private boolean PriceFirstFocus = true;
     private boolean cityFieldFirstFocus = true;
-    private boolean emailFirstFocus = true;
+    private boolean ReviewFirstFocus = true;
     private boolean CabTypeFirstFocus = true;
     private JLabel nameError = new JLabel();
     private JLabel usernameError = new JLabel();
     public String finalfirstNameString;
     public String finallastNameString;
     public String finalmobileFieldString;
-    public String finalsexString;
-    public String finaldobFString;
+    public String finalCab_NumberString;
+    public String finalPriceFString;
     public String finalcityString;
-    public String finalemailString;
+    public String finalReviewString;
     public String finalCabTypeString;
-    private JButton signUpButton = new JButton("Add Driver");
+    private JButton signUpButton = new JButton("Add Cab");
     private JButton resetButton = new JButton("Reset");
 
     public AdminLoginCab() throws IOException, SQLException {
-
         Connection con = ConnectionProvider.getConnection();
         String q = "INSERT INTO Cab (City, First_Name, Last_Name, Cab_Number, Cab_Type, Phone_Number, Price, Review) VALUES (?,?,?,?,?,?,?,?)";
         PreparedStatement pstmt = con.prepareStatement(q);
-
 
         JFrame frame = new JFrame("Admin Access for Cab");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,9 +65,9 @@ public class AdminLoginCab extends JFrame {
         panel3.setBackground(Color.black);
         panel5.setBackground(Color.blue);
 
-        panel1.setPreferredSize(new Dimension(1000, 80));// Create a div
-        panel3.setPreferredSize(new Dimension(210, 100));// Create a div
-        panel5.setPreferredSize(new Dimension(1000, 20));// Create a div
+        panel1.setPreferredSize(new Dimension(1000, 80));
+        panel3.setPreferredSize(new Dimension(210, 100));
+        panel5.setPreferredSize(new Dimension(1000, 20));
 
         firstName.addFocusListener(new FocusListener() {
             @Override
@@ -144,61 +142,46 @@ public class AdminLoginCab extends JFrame {
             }
         });
 
-        sexField.addFocusListener(new FocusListener() {
+        Cab_Number.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (sexFieldFirstFocus) {
-                    sexField.setText("");
-                    sexFieldFirstFocus = false;
+                if (Cab_NumberFirstFocus) {
+                    Cab_Number.setText("");
+                    Cab_NumberFirstFocus = false;
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (sexField.getText().isEmpty()) {
-                    sexField.setText("City");
-                    sexField.setForeground(Color.gray);
-                    sexFieldFirstFocus = true;
+                if (Cab_Number.getText().isEmpty()) {
+                    Cab_Number.setText("Cab Number");
+                    Cab_Number.setForeground(Color.gray);
+                    Cab_NumberFirstFocus = true;
                 }
             }
         });
 
-        dobField.addFocusListener(new FocusListener() {
+        Price.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
-                if (dobField.getText().isEmpty()) {
-                    dobField.setText("YYYY-MM-DD");
-                    dobField.setForeground(Color.gray);
+                if (Price.getText().isEmpty()) {
+                    Price.setText("Price in rupees");
+                    Price.setForeground(Color.gray);
                     nameError.setText("");
-                    dobFieldFirstFocus = true;
-                } else {
-                    // Validate the date format
-                    try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        dateFormat.setLenient(false);
-                        dateFormat.parse(dobField.getText());
-                        finaldobFString = dobField.getText();
-                        nameError.setText("");
-                    } catch (ParseException ex) {
-                        nameError.setForeground(Color.RED);
-                        nameError.setText("Invalid date format");
-                        JOptionPane.showMessageDialog(AdminLoginCab.this, "Please enter the date in the format YYYY-MM-DD",
-                                "Invalid Date", JOptionPane.WARNING_MESSAGE);
-                        dobField.setText("yyyy-MM-dd");
-                    }
+                    PriceFirstFocus = true;
                 }
             }
 
             @Override
             public void focusGained(FocusEvent e) {
-                if (dobFieldFirstFocus) {
-                    dobField.setText("");
-                    dobFieldFirstFocus = false;
+                if (PriceFirstFocus) {
+                    Price.setText("");
+                    PriceFirstFocus = false;
                 }
 
-                if (dobField.getText().equals("(YYYY-MM-DD)")) {
-                    dobField.setText("");
-                    dobField.setForeground(Color.black);
+                if (Price.getText().equals("Price in rupees")) {
+                    Price.setText("");
+                    Price.setForeground(Color.black);
                 }
             }
         });
@@ -217,42 +200,65 @@ public class AdminLoginCab extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 if (CabType.getText().isEmpty()) {
-                    CabType.setText("City you live in");
+                    CabType.setText("Car Type");
                     CabType.setForeground(Color.gray);
                     CabTypeFirstFocus = true;
                 }
             }
         });
 
-        email.addFocusListener(new FocusListener() {
+        cityField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (emailFirstFocus) {
-                    email.setText("");
-                    emailFirstFocus = false;
+                if (cityFieldFirstFocus) {
+                    cityField.setText("");
+                    cityFieldFirstFocus = false;
+                } else {
+                    finalcityString = cityField.getText();
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (email.getText().isEmpty()) {
-                    email.setText("Email Address");
-                    email.setForeground(Color.gray);
-                    emailFirstFocus = true;
+                if (cityField.getText().isEmpty()) {
+                    cityField.setText("City");
+                    cityField.setForeground(Color.gray);
+                    cityFieldFirstFocus = true;
                 }
             }
         });
+
+        Review.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (ReviewFirstFocus) {
+                    Review.setText("");
+                    ReviewFirstFocus = false;
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (Review.getText().isEmpty()) {
+                    Review.setText("Reviews");
+                    Review.setForeground(Color.gray);
+                    ReviewFirstFocus = true;
+                }
+            }
+        });
+
         signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String firstNameText = firstName.getText().trim();
                 String lastNameText = lastName.getText().trim();
                 String mobileText = mobileField.getText().trim();
-                String sexText = sexField.getText().trim();
-                String dobText = dobField.getText().trim();
+                String Cab_NumberText = Cab_Number.getText().trim();
+                String PriceText = Price.getText().trim();
                 String CabTypeText = CabType.getText().trim();
-                String emailText = email.getText().trim();
-               
+                String cityText = cityField.getText().trim();
+                String ReviewText = Review.getText().trim();
+
                 boolean isValid = true;
 
                 if (firstNameText.isEmpty() || firstNameText.equals("Enter your First Name")) {
@@ -267,122 +273,91 @@ public class AdminLoginCab extends JFrame {
                     isValid = false;
                 }
 
-                if (mobileText.isEmpty() || mobileText.equals("Enter your Mobile Number")) {
+                if (mobileText.isEmpty() || mobileText.equals("Mobile Number")) {
                     nameError.setForeground(Color.RED);
                     nameError.setText("Please enter your mobile number");
                     isValid = false;
                 }
 
-                if (!sexText.equalsIgnoreCase("Male") && !sexText.equalsIgnoreCase("Female")
-                        && !sexText.equalsIgnoreCase("Others")) {
+                if (PriceText.isEmpty() || PriceText.equals("Price in rupees")) {
                     nameError.setForeground(Color.RED);
-                    nameError.setText("Invalid Sex");
-                    isValid = false;
-                }
-
-                if (dobText.isEmpty() || dobText.equals("Enter your Date of Birth (YYYY-MM-DD)")) {
-                    nameError.setForeground(Color.RED);
-                    nameError.setText("Please enter your date of birth");
+                    nameError.setText("Please enter the price");
                     isValid = false;
                 } else {
                     try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        dateFormat.setLenient(false);
-                        dateFormat.parse(dobText);
-                    } catch (ParseException ex) {
+                        Double.parseDouble(PriceText);
+                    } catch (NumberFormatException ex) {
                         nameError.setForeground(Color.RED);
-                        nameError.setText("Invalid date format");
+                        nameError.setText("Invalid price format");
                         isValid = false;
                     }
                 }
 
-                if (CabTypeText.isEmpty() || CabTypeText.equals("Enter your City")) {
+                if (CabTypeText.isEmpty() || CabTypeText.equals("Car Type")) {
                     nameError.setForeground(Color.RED);
-                    nameError.setText("Please enter your city");
+                    nameError.setText("Please enter the cab type");
                     isValid = false;
                 }
 
-                if (!isValidEmail(emailText)) {
-                    usernameError.setForeground(Color.RED);
-                    usernameError.setText("Invalid email");
+                if (cityText.isEmpty() || cityText.equals("City")) {
+                    nameError.setForeground(Color.RED);
+                    nameError.setText("Please enter the city");
                     isValid = false;
                 }
 
                 if (isValid) {
-                    JOptionPane.showMessageDialog(AdminLoginCab.this, "Correct",
-                            "Successful", JOptionPane.WARNING_MESSAGE);
-                    // try {
-
-                    //     System.out.println("Correct info");
-                    //     // pstmt.setString(1, finalfirstNameString);
-                    //     // pstmt.setString(2, finallastNameString);
-                    //     // pstmt.setString(3, finalsexString);
-                    //     // pstmt.setString(4, finaldobFString);
-                    //     // pstmt.setString(5, finalcityString);
-                    //     // pstmt.setString(6, finalpasswordString);
-                    //     // pstmt.setString(7, finalemailString);
-                    //     // pstmt.setString(8, finalmobileFieldString);
-
-                    //     // Execute the prepared statement
-                    //     // int rowsAffected = pstmt.executeUpdate();
-                    //     // if (rowsAffected > 0) {
-                    //     //     JOptionPane.showMessageDialog(SignUpForm.this, "Successfully Registered!!!", "Success",
-                    //     //             JOptionPane.INFORMATION_MESSAGE);
-                    //     //     Welcome welcomeFrame = new Welcome();
-                    //     //     welcomeFrame.setVisible(true);
-                    //     //     dispose(); // Close the current SignUpForm
-                    //     // } else {
-                    //     //     JOptionPane.showMessageDialog(SignUpForm.this, "Failed to register. Please try again.",
-                    //     //             "Error", JOptionPane.ERROR_MESSAGE);
-                    //     // }
-                    // } catch ( ex) {
-                    //     ex.printStackTrace();
-                    //     JOptionPane.showMessageDialog(AdminLoginCab.this, "Error: " + ex.getMessage(), "Database Error",
-                    //             JOptionPane.ERROR_MESSAGE);
-                    // }
+                    JOptionPane.showMessageDialog(AdminLoginCab.this, "Cab details added successfully",
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
+                    try {
+                        pstmt.setString(1, cityText);
+                        pstmt.setString(2, firstNameText);
+                        pstmt.setString(3, lastNameText);
+                        pstmt.setString(4, Cab_NumberText);
+                        pstmt.setString(5, CabTypeText);
+                        pstmt.setString(6, mobileText);
+                        pstmt.setString(7, PriceText);
+                        pstmt.setString(8, ReviewText);
+                        int rowsAffected = pstmt.executeUpdate();
+                        if (rowsAffected > 0) {
+                            System.out.println("Cab details added successfully");
+                        } else {
+                            JOptionPane.showMessageDialog(AdminLoginCab.this, "Failed to add cab details. Please try again.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(AdminLoginCab.this, "Error: " + ex.getMessage(), "Database Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(AdminLoginCab.this, "Please check and correct the invalid fields",
                             "Invalid Input", JOptionPane.WARNING_MESSAGE);
                 }
             }
-            private boolean isValidEmail(String email) {
-                String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-                return email.matches(emailRegex);
-            }
-        }
-    );
+        });
 
         resetButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    firstNameFirstFocus = true;
-                    lastNameFirstFocus = true;
-                    mobileFieldFirstFocus = true;
-                    sexFieldFirstFocus = true;
-                    dobFieldFirstFocus = true;
-                    cityFieldFirstFocus = true;
-                    emailFirstFocus = true;
-                    nameError.setText("");
-                    usernameError.setText("");
-                    firstName.setText("Enter your First Name");
-                    lastName.setText("Enter your Last Name");
-                    mobileField.setText("Mobile Number");
-                    dobField.setText("YYYY-MM-DD");
-                    sexField.setText("Male/ Female/ Others");
-                    CabType.setText("City you live in");
-                    email.setText("Email Address");
-    
-                    System.out.println("First Name: " + finalfirstNameString);
-                    System.out.println("Last Name: " + finallastNameString);
-                    System.out.println("Mobile: " + finalmobileFieldString);
-                    System.out.println("Sex: " + finalsexString);
-                    System.out.println("Date of Birth: " + finaldobFString);
-                    System.out.println("Cab Type: " + finalcityString);
-                    System.out.println("Email: " + finalemailString);
-                }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                firstNameFirstFocus = true;
+                lastNameFirstFocus = true;
+                mobileFieldFirstFocus = true;
+                Cab_NumberFirstFocus = true;
+                PriceFirstFocus = true;
+                cityFieldFirstFocus = true;
+                ReviewFirstFocus = true;
+                nameError.setText("");
+                usernameError.setText("");
+                firstName.setText("Enter your First Name");
+                lastName.setText("Enter your Last Name");
+                mobileField.setText("Mobile Number");
+                Price.setText("Price in rupees");
+                Cab_Number.setText("Cab Number");
+                CabType.setText("Car Type");
+                cityField.setText("City");
+                Review.setText("Reviews");
             }
-            );
-
+        });
 
         // Panel 1 Layout
         panel1.setLayout(new BorderLayout());
@@ -406,7 +381,7 @@ public class AdminLoginCab extends JFrame {
         Image resizedImg = img.getScaledInstance(logoWidth, logoHeight, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImg);
 
-        JLabel imageLabel = new JLabel(resizedIcon); // Use resizedIcon here
+        JLabel imageLabel = new JLabel(resizedIcon);
         subPanel11.add(imageLabel);
 
         panel1.add(subPanel11, BorderLayout.WEST);
@@ -430,7 +405,6 @@ public class AdminLoginCab extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent click) {
                 try {
-
                     AdminPage admin = new AdminPage();
                     frame.dispose();
                 } catch (IOException e) {
@@ -443,15 +417,13 @@ public class AdminLoginCab extends JFrame {
         frame.add(panel1, BorderLayout.NORTH);
 
         // Panel 3 Layout
-
-
         panel3.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.CENTER;
 
-        // Add the "Sign Up For Free" text
+        // Add the "Register your Cab Details" text
         JLabel signUpLabel = new JLabel("Register your Cab Details");
         signUpLabel.setForeground(Color.WHITE);
         signUpLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -463,7 +435,7 @@ public class AdminLoginCab extends JFrame {
         // Add the form elements
         gbc.gridx = 0;
         gbc.gridy = 1;
-        JLabel firstNameLabel = new JLabel("");
+        JLabel firstNameLabel = new JLabel("First Name:");
         firstNameLabel.setForeground(Color.WHITE);
         panel3.add(firstNameLabel, gbc);
         gbc.gridx = 1;
@@ -472,7 +444,7 @@ public class AdminLoginCab extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        JLabel lastNameLabel = new JLabel("");
+        JLabel lastNameLabel = new JLabel("Last Name:");
         lastNameLabel.setForeground(Color.WHITE);
         panel3.add(lastNameLabel, gbc);
         gbc.gridx = 1;
@@ -481,7 +453,7 @@ public class AdminLoginCab extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        JLabel mobileLabel = new JLabel("");
+        JLabel mobileLabel = new JLabel("Mobile Number:");
         mobileLabel.setForeground(Color.WHITE);
         panel3.add(mobileLabel, gbc);
         gbc.gridx = 1;
@@ -490,40 +462,48 @@ public class AdminLoginCab extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        JLabel sexLabel = new JLabel("");
-        sexLabel.setForeground(Color.WHITE);
-        panel3.add(sexLabel, gbc);
+        JLabel Cab_NumberLabel = new JLabel("Cab Number:");
+        Cab_NumberLabel.setForeground(Color.WHITE);
+        panel3.add(Cab_NumberLabel, gbc);
         gbc.gridx = 1;
-        sexField.setPreferredSize(new Dimension(300, 30));
-        panel3.add(sexField, gbc);
+        Cab_Number.setPreferredSize(new Dimension(300, 30));
+        panel3.add(Cab_Number, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 5;
-        JLabel dobLabel = new JLabel("");
-        dobLabel.setForeground(Color.WHITE);
-        panel3.add(dobLabel, gbc);
+        JLabel PriceLabel = new JLabel("Price:");
+        PriceLabel.setForeground(Color.WHITE);
+        panel3.add(PriceLabel, gbc);
         gbc.gridx = 1;
-        dobField.setPreferredSize(new Dimension(300, 30));
-        panel3.add(dobField, gbc);
+        Price.setPreferredSize(new Dimension(300, 30));
+        panel3.add(Price, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 6;
-        JLabel CabTypeLabel = new JLabel();
+        JLabel CabTypeLabel = new JLabel("Cab Type:");
         CabTypeLabel.setForeground(Color.WHITE);
-        panel3.add(CabTypeLabel,gbc);
-        gbc.gridx=1;
+        panel3.add(CabTypeLabel, gbc);
+        gbc.gridx = 1;
         CabType.setPreferredSize(new Dimension(300, 30));
         panel3.add(CabType, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 7;
-        JLabel emailLabel = new JLabel("");
-        emailLabel.setForeground(Color.WHITE);
-        panel3.add(emailLabel, gbc);
+        JLabel cityLabel = new JLabel("City:");
+        cityLabel.setForeground(Color.WHITE);
+        panel3.add(cityLabel, gbc);
         gbc.gridx = 1;
-        email.setPreferredSize(new Dimension(300, 30));
-        panel3.add(email, gbc);
-        frame.add(panel3, BorderLayout.CENTER);
+        cityField.setPreferredSize(new Dimension(300, 30));
+        panel3.add(cityField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        JLabel ReviewLabel = new JLabel("Review:");
+        ReviewLabel.setForeground(Color.WHITE);
+        panel3.add(ReviewLabel, gbc);
+        gbc.gridx = 1;
+        Review.setPreferredSize(new Dimension(300, 30));
+        panel3.add(Review, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 9;
@@ -539,18 +519,7 @@ public class AdminLoginCab extends JFrame {
         resetButton.setPreferredSize(new Dimension(100, 40));
         panel3.add(resetButton, gbc);
 
-
-
-
-
-
-
-
-
-
-
-
-
+        // Panel 5 Layout
         panel5.setBackground(Color.blue);
         panel5.setPreferredSize(new Dimension(500, 30));
         JLabel label = new JLabel();

@@ -657,10 +657,13 @@ public class PlanPage extends JFrame {
 
                 // Query the database to retrieve the itinerary ID based on the selected itinerary name
                 int selectedItineraryID = -1; // Initialize with a default value
-                int day_count=-1;
+                int day_count = -1;
+                
                 try (Connection con = ConnectionProvider.getConnection();
-                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
+                     PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
+                    
                     pstmt.setString(1, selectedItineraryName);
+                    
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
@@ -671,6 +674,7 @@ public class PlanPage extends JFrame {
                             AppConfig.itineary_ID = selectedItineraryID;
                             AppConfig.text_days = day_count;
                             FinalPage nextPage = new FinalPage();
+                            nextPage.setVisible(true);
                             // Close or hide the current frame if needed
                         } else {
                             // Handle the case where the selected itinerary ID is not found
@@ -683,6 +687,8 @@ public class PlanPage extends JFrame {
                     ex.printStackTrace();
                     // Handle SQL exception appropriately, e.g., log or display error message
                 }
+                
+
 
                 // Redirect to the NextPage and pass the selected itinerary ID
 
