@@ -18,14 +18,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class PrePackageFinalPage extends JFrame {
-    private JPanel buttonPanel;
-    private JPanel contentPanel;
     private static JLabel stringLabelFinalItninerary;
     Vector<Vector<String>> selectedItinerary = new Vector<>();
     private static Vector<String> itineraryData = new Vector<>();
     private int priceOfTheDay = 0;
     JLabel priceLabel;
-    
+
     // Items in this
     // numberOfButtons, itineraryData (Update this with SQL Query for every Day),
     // buttonText.substring(4) (Take Day informaion from this)
@@ -162,7 +160,7 @@ public class PrePackageFinalPage extends JFrame {
                 }
             });
             buttonGroup.add(dayButton);
-            buttonsPanel.add(dayButton); // Add the button to the buttonsPanel
+            buttonsPanel.add(dayButton);
         }
 
         // Create a new JPanel for the bottom panel
@@ -172,7 +170,7 @@ public class PrePackageFinalPage extends JFrame {
         // Add the label to the bottom panel
         priceLabel = new JLabel("Price: " + priceOfTheDay);
         priceLabel.setForeground(Color.WHITE);
-        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adjust the padding as needed
+        priceLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         bottomPanel.add(priceLabel, BorderLayout.SOUTH);
         panel2.setLayout(new BorderLayout());
@@ -244,11 +242,13 @@ public class PrePackageFinalPage extends JFrame {
 
         return button;
     }
-
-    // public static void updatePanel3WithRandomText() {
-    // stringLabelFinalItninerary.setText(AppConfig.stringItineraryFinal);
-    // }
 }
+
+// public static void updatePanel3WithRandomText() {
+// stringLabelFinalItninerary.setText(AppConfig.stringItineraryFinal);
+// }
+
+// ---------------------OVER----------------------------------------------------
 
 // itineraryData.clear(); // Clear existing data
 // String destination = getRandomCity();

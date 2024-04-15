@@ -18,8 +18,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class FinalPage extends JFrame {
-    private JPanel buttonPanel;
-    private JPanel contentPanel;
+
     private static JLabel stringLabelFinalItninerary;
     private static Vector<String> itineraryData = new Vector<>();
     private int priceOfTheDay = 0;
