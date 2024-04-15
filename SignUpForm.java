@@ -458,7 +458,6 @@ public class SignUpForm extends JFrame {
                             JOptionPane.showMessageDialog(SignUpForm.this, "Successfully Registered!!!", "Success",
                                     JOptionPane.INFORMATION_MESSAGE);
                             Welcome welcomeFrame = new Welcome();
-                            welcomeFrame.setVisible(true);
                             dispose(); // Close the current SignUpForm
                         } else {
                             JOptionPane.showMessageDialog(SignUpForm.this, "Failed to register. Please try again.",

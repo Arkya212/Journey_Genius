@@ -105,7 +105,6 @@ public class Welcome extends JFrame{
                 
                 try{
                     Login loginFrame = new Login();
-                    loginFrame.setVisible(true);
                     frame.dispose();
                 } catch(IOException ex){
                     ex.printStackTrace();
@@ -121,7 +120,6 @@ public class Welcome extends JFrame{
                 
                 try{
                     SignUpForm signUpFrame = new SignUpForm();
-                    signUpFrame.setVisible(true);
                     frame.dispose();
                 } catch(IOException ex){
                     ex.printStackTrace();

@@ -493,7 +493,6 @@ public class PlanPage extends JFrame {
                 try {
 
                     PrePackage prePackageFrame = new PrePackage();
-                    prePackageFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
@@ -549,7 +548,6 @@ public class PlanPage extends JFrame {
                 // Instantiate the PrePackage frame
                 try {
                     CustomPackage CustomPageFrame = new CustomPackage();
-                    CustomPageFrame.setVisible(true);
                     frame.dispose(); 
                 } catch (IOException | SQLException e1) {
                     // TODO Auto-generated catch block
@@ -673,7 +671,6 @@ public class PlanPage extends JFrame {
                             AppConfig.itineary_ID = selectedItineraryID;
                             AppConfig.text_days = day_count;
                             FinalPage nextPage = new FinalPage();
-                            nextPage.setVisible(true);
                             // Close or hide the current frame if needed
                         } else {
                             // Handle the case where the selected itinerary ID is not found
@@ -719,7 +716,6 @@ public class PlanPage extends JFrame {
                 Login LoginFrame;
                 try {
                     LoginFrame = new Login();
-                    LoginFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException | SQLException e1) {
                     // TODO Auto-generated catch block
