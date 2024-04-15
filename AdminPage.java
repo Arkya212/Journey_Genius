@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class AdminPage extends JFrame {
     // private JButton logincab;
@@ -117,10 +118,13 @@ public class AdminPage extends JFrame {
 
                 // Route the button click to the Admin.java clas
                 try {
-                    AdminLoginHotel hotel = new AdminLoginHotel();
+                    HotelRegistration hotel = new HotelRegistration();
                     frame.dispose();
                 } catch (IOException ez) {
                     ez.printStackTrace();
+                } catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
 
             }
