@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -8,15 +11,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PrePackage extends JFrame {
+    ButtonGroup buttonGroup = new ButtonGroup();
+    List<List<String>> data = new ArrayList<>();
+    int totalTravelDays;
+    String feedback;
+    int price;
+    int packid;
+
     public PrePackage() throws IOException, SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         PreparedStatement pstmt2 = null;
         ResultSet rs = null;
         ResultSet rs2 = null;
+
+        AppConfig.prePackageSelectId = 6;
+        AppConfig.text_city = "Kolkata";
+        AppConfig.priceOfItinerary = 1000;
+        AppConfig.text_days = 8;
 
         con = ConnectionProvider.getConnection();
         String sql = "SELECT Total_Travel_Days, Feedback, Price, Package_ID FROM pre_package WHERE City = ?";
@@ -27,6 +41,25 @@ public class PrePackage extends JFrame {
         pstmt2.setString(1, AppConfig.text_city);
         rs = pstmt.executeQuery();
         rs2 = pstmt2.executeQuery();
+
+        while (rs.next()) {
+            List<String> row = new ArrayList<>();
+            row.add(rs.getString("Package_ID"));
+            row.add(rs.getString("Total_Travel_Days"));
+            row.add(rs.getString("Feedback"));
+            row.add(rs.getString("Price"));
+            data.add(row);
+        }
+
+        // Print the data
+        for (List<String> row : data) {
+            for (String value : row) {
+                System.out.print(value + " ");
+            }
+            System.out.println();
+        }
+
+        rs = pstmt.executeQuery(); // To reset the rs pointer.
 
         int count = 0;
         if (rs2.next()) {
@@ -112,7 +145,6 @@ public class PrePackage extends JFrame {
                 PlanPage PlanPageFrame;
                 try {
                     PlanPageFrame = new PlanPage();
-                    PlanPageFrame.setVisible(true);
                     frame.dispose();
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -161,24 +193,48 @@ public class PrePackage extends JFrame {
         JButton ProceedButton = new JButton("<html><center>Proceed for <br> check out</center></html>");
         ProceedButton.setPreferredSize(new Dimension(100, 50));
         subPanel32.add(ProceedButton);
+
+        ProceedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Enumeration<AbstractButton> buttons = buttonGroup.getElements();
+                while (buttons.hasMoreElements()) {
+                    AbstractButton button = buttons.nextElement();
+                    if (button.isSelected()) {
+                        AppConfig.prePackageSelectId = (int) button.getClientProperty("packid");
+                        System.out.println("Selected Pack ID: " + AppConfig.prePackageSelectId);
+                        getPriceAndTotalTravelDays(data, AppConfig.prePackageSelectId);
+                        System.out.println("Total Price" + AppConfig.prePackagePriceOfItinerary);
+                        System.out.println("Total Days: " + AppConfig.prePackagetext_days);
+                        try {
+                            PrePackageFinalPage prePackageFinalPage = new PrePackageFinalPage();
+                            frame.dispose();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+
         panel2.add(subPanel32, BorderLayout.SOUTH);
 
         frame.add(panel2, BorderLayout.WEST);
 
         // Panel 4 Layout
         panel4.setLayout(new GridLayout(count, 1, 10, 20));
-        ButtonGroup buttonGroup = new ButtonGroup();
         if (count == 0) {
             JPanel subPanel = new JPanel();
-            subPanel.setLayout(new GridLayout(1, 1)); // Setting single column grid layout for the message
+            subPanel.setLayout(new GridLayout(1, 1));
 
-            JLabel messageLabel = new JLabel("Sorry for the inconvenience but currently no tours are offered for the current selection.");
-            messageLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
+            JLabel messageLabel = new JLabel(
+                    "Sorry for the inconvenience but currently no tours are offered for the current selection.");
+            messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            subPanel.setLayout(new BorderLayout());
+            subPanel.add(messageLabel, BorderLayout.CENTER);
 
-            subPanel.setLayout(new BorderLayout()); // Setting BorderLayout to center the message label
-            subPanel.add(messageLabel, BorderLayout.CENTER); // Adding the message label to the center of the subPanel
-
-            panel4.add(subPanel); // Adding the subPanel to the main panel4
+            panel4.add(subPanel);
         } else {
             // Create a ButtonGroup
             for (int i = 0; i < count; i++) {
@@ -187,10 +243,10 @@ public class PrePackage extends JFrame {
 
                 // Fetch the data from rs
                 if (rs.next()) {
-                    int totalTravelDays = rs.getInt("Total_Travel_Days");
-                    String feedback = rs.getString("Feedback");
-                    double price = rs.getDouble("Price");
-                    int packid = rs.getInt("Package_ID");
+                    totalTravelDays = rs.getInt("Total_Travel_Days");
+                    feedback = rs.getString("Feedback");
+                    price = rs.getInt("Price");
+                    packid = rs.getInt("Package_ID");
 
                     // Determine the color scheme based on the current index
                     Color color;
@@ -217,43 +273,14 @@ public class PrePackage extends JFrame {
 
                     addSubPanel(subPanel, color, "Number of Days: " + totalTravelDays, true, buttonGroup, packid);
                     addSubPanel(subPanel, Color.GREEN, "Travel Name: " + feedback, false, buttonGroup, -1);
-                    addSubPanel(subPanel, Color.YELLOW, "Price: $" + price, false, buttonGroup, -1);
+                    addSubPanel(subPanel, Color.YELLOW, "Price: ₹" + price, false, buttonGroup, -1);
 
-                    panel4.add(subPanel); // Adding the subPanel to the main panel4
+                    panel4.add(subPanel);
                 }
             }
         }
 
         frame.add(panel4, BorderLayout.CENTER);
-
-        AtomicInteger selectedPackId = new AtomicInteger(-1);
-
-        ProceedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Enumeration<AbstractButton> buttons = buttonGroup.getElements();
-                while (buttons.hasMoreElements()) {
-                    AbstractButton button = buttons.nextElement();
-                    if (button.isSelected()) {
-                        AppConfig.selectedPackId = (int) button.getClientProperty("packid");
-                        System.out.println("Selected Pack ID: " + selectedPackId);
-        
-                        // Redirect to FinalPage
-                        try {
-                            FinalPage finalPage = new FinalPage();
-                            frame.getContentPane().removeAll(); // Remove all components from the frame
-                            frame.getContentPane().add(finalPage); // Add the FinalPage panel
-                            frame.revalidate(); // Revalidate the frame
-                            frame.repaint(); // Repaint the frame
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-        
 
         // Panel 5 Layout
         panel5.setLayout(new BorderLayout());
@@ -268,7 +295,8 @@ public class PrePackage extends JFrame {
         frame.add(panel5, BorderLayout.SOUTH);
     }
 
-    private void addSubPanel(JPanel parent, Color color, String labelText, boolean addRadioButton, ButtonGroup buttonGroup, int packid) {
+    private void addSubPanel(JPanel parent, Color color, String labelText, boolean addRadioButton,
+            ButtonGroup buttonGroup, int packid) {
         JPanel subPanel = new JPanel(new BorderLayout(10, 0));
         subPanel.setBackground(color);
         subPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 5));
@@ -284,7 +312,8 @@ public class PrePackage extends JFrame {
 
         if (addRadioButton) {
             JPanel radioButtonPanel = new JPanel();
-            radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS)); // Use BoxLayout for centering
+            radioButtonPanel.setLayout(new BoxLayout(radioButtonPanel, BoxLayout.X_AXIS)); // Use BoxLayout for
+                                                                                           // centering
             radioButtonPanel.setBackground(Color.BLACK);
             radioButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Add padding
 
@@ -304,4 +333,19 @@ public class PrePackage extends JFrame {
         subPanel.add(labelPanel, BorderLayout.CENTER);
         parent.add(subPanel);
     }
+
+    public void getPriceAndTotalTravelDays(List<List<String>> data, int packageIdToSearch) {
+        for (List<String> row : data) {
+            if (row.get(0).equals(String.valueOf(packageIdToSearch))) {
+                String price = row.get(3);
+                String totalTravelDays = row.get(1);
+
+                AppConfig.prePackagetext_days = Integer.parseInt(totalTravelDays);
+                AppConfig.prePackagePriceOfItinerary = Integer.parseInt(price);
+                return;
+            }
+        }
+        System.out.println("Package ID not found: " + packageIdToSearch);
+    }
+
 }

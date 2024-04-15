@@ -381,7 +381,6 @@ public class CustomPackage extends JFrame {
                         public void run() {
                             try {
                                 FinalPage finalPage = new FinalPage();
-                                AppConfig.previousPage = "FinalCustomPage";
                                 AppConfig.day_itt = "";
                                 frame.dispose();
                             } catch (IOException e) {

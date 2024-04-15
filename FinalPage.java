@@ -24,7 +24,7 @@ public class FinalPage extends JFrame {
     private static Vector<String> itineraryData = new Vector<>();
     private int priceOfTheDay = 0;
     JLabel priceLabel;
-    private static final int numberOfButtons = AppConfig.text_days; // Main Variable that handles all the Items in this
+    private static int numberOfButtons = AppConfig.text_days; // Main Variable that handles all the Items in this
 
     // numberOfButtons, itineraryData (Update this with SQL Query for every Day),
     // buttonText.substring(4) (Take Day informaion from this)
