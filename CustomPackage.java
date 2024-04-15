@@ -54,25 +54,25 @@ public class CustomPackage extends JFrame {
 
         // AppConfig.text_city = "delhi";
         // AppConfig.text_days = 4;
-        try {
-            Connection con = ConnectionProvider.getConnection();
-            String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
-            PreparedStatement pstmt2 = con.prepareStatement(sq);
-            pstmt2.setString(1, AppConfig.text_name);
-            ResultSet rs = pstmt2.executeQuery();
+        // try {
+        //     Connection con = ConnectionProvider.getConnection();
+        //     String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
+        //     PreparedStatement pstmt2 = con.prepareStatement(sq);
+        //     pstmt2.setString(1, AppConfig.text_name);
+        //     ResultSet rs = pstmt2.executeQuery();
         
-            if (rs.next()) {
-                AppConfig.itineary_ID = rs.getInt("Itinerary_ID");
-            }
+        //     if (rs.next()) {
+        //         AppConfig.itineary_ID = rs.getInt("Itinerary_ID");
+        //     }
         
-            // Close resources
-            rs.close();
-            pstmt2.close();
-            con.close();
+        //     // Close resources
+        //     rs.close();
+        //     pstmt2.close();
+        //     con.close();
         
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
         
 
         System.out.println(AppConfig.itineary_ID);

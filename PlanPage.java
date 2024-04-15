@@ -469,6 +469,25 @@ public class PlanPage extends JFrame {
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
+                try {
+                    Connection cont = ConnectionProvider.getConnection();
+                    String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
+                    PreparedStatement pstmt2 = cont.prepareStatement(sq);
+                    pstmt2.setString(1, AppConfig.text_name);
+                    ResultSet rs2 = pstmt2.executeQuery();
+                
+                    if (rs2.next()) {
+                        AppConfig.itineary_ID = rs2.getInt("Itinerary_ID");
+                    }
+                
+                    // Close resources
+                    rs2.close();
+                    pstmt2.close();
+                    con.close();
+                
+                } catch (SQLException ep) {
+                    ep.printStackTrace();
+                }
 
             }
         });
@@ -513,6 +532,25 @@ public class PlanPage extends JFrame {
                     }
                 }
                 // Instantiate the PrePackage frame
+                try {
+                    Connection cont = ConnectionProvider.getConnection();
+                    String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
+                    PreparedStatement pstmt2 = cont.prepareStatement(sq);
+                    pstmt2.setString(1, AppConfig.text_name);
+                    ResultSet rs2 = pstmt2.executeQuery();
+                
+                    if (rs2.next()) {
+                        AppConfig.itineary_ID = rs2.getInt("Itinerary_ID");
+                    }
+                
+                    // Close resources
+                    rs2.close();
+                    pstmt2.close();
+                    con.close();
+                
+                } catch (SQLException ep) {
+                    ep.printStackTrace();
+                }
                 try {
                     CustomPackage CustomPageFrame = new CustomPackage();
                     frame.dispose();
@@ -747,7 +785,9 @@ public class PlanPage extends JFrame {
             }
         });
 
+
     }
+    
 
     public static JRadioButton generateRadioButton(String labelText) {
         JRadioButton radioButton = new JRadioButton(labelText);
