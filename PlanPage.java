@@ -138,7 +138,8 @@ public class PlanPage extends JFrame {
 
         // Create and add text field for "Your City" 
         gbc.gridy = 1;
-        JTextField textField1 = new JTextField("Your City");
+        // JTextField textField1 = new JTextField("Your City");
+        JTextField textField1 = new JTextField("delhi");
         textField1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField1.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField1, gbc);
@@ -197,7 +198,8 @@ public class PlanPage extends JFrame {
 
         // Create and add text field for "start-date" 
         gbc.gridy = 3;
-        JTextField textField2 = new JTextField("YYYY-MM-DD");
+        // JTextField textField2 = new JTextField("YYYY-MM-DD");
+        JTextField textField2 = new JTextField("1999-12-12");
         textField2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField2.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField2, gbc);
@@ -298,7 +300,8 @@ public class PlanPage extends JFrame {
 
         // Create and add text field for "Your City" 
         gbc.gridy = 5;
-        JTextField textField4 = new JTextField("Trip Name");
+        // JTextField textField4 = new JTextField("Trip Name");
+        JTextField textField4 = new JTextField("delhi_trip");
         textField4.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField4.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField4, gbc);
@@ -656,15 +659,20 @@ public class PlanPage extends JFrame {
 
                 // Query the database to retrieve the itinerary ID based on the selected itinerary name
                 int selectedItineraryID = -1; // Initialize with a default value
+                int day_count=-1;
                 try (Connection con = ConnectionProvider.getConnection();
-                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID FROM Itinerary WHERE Itinerary_Name = ?")) {
+                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
                     pstmt.setString(1, selectedItineraryName);
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
+                            day_count = rs.getInt("no_of_days");
+    
                         }
-                        if (selectedItineraryID != -1) {
-                            CustomPackage nextPage = new CustomPackage();
+                        if (selectedItineraryID != -1 && day_count!=-1) {
+                            AppConfig.itineary_ID = selectedItineraryID;
+                            AppConfig.text_days = day_count;
+                            FinalPage nextPage = new FinalPage();
                             nextPage.setVisible(true);
                             // Close or hide the current frame if needed
                         } else {

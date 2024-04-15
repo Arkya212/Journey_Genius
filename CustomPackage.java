@@ -63,6 +63,7 @@ public class CustomPackage extends JFrame {
         
 
         System.out.println(AppConfig.itineary_ID);
+        // AppConfig.itineary_ID = 39;
 
         AppConfig.priceOfItinerary = 0;
 
@@ -179,12 +180,12 @@ public class CustomPackage extends JFrame {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         // Come Here
-                        // try {
-                        // PlanPage planPage = new PlanPage();
-                        // frame.dispose();
-                        // } catch (IOException ex) {
-                        // ex.printStackTrace();
-                        // }
+                        try {
+                        PlanPage planPage = new PlanPage();
+                        frame.dispose();
+                        } catch (IOException ex) {
+                        ex.printStackTrace();
+                        }
                     }
                 });
             }
@@ -307,7 +308,7 @@ public class CustomPackage extends JFrame {
                 for (Component component : components) {
                     if (component instanceof JLabel) {
                         ((JLabel) component).setText("");
-                        extracted_day_itt = null;
+                        extracted_day_itt = "";
                         AppConfig.priceOfItinerary = 0;
                     }
                 }
@@ -344,7 +345,8 @@ public class CustomPackage extends JFrame {
                                     + AppConfig.priceOfItinerary + "</center></html>");
 
                     AppConfig.day_itt = "<html>" + extracted_day_itt + "</html>";
-                    System.out.println(correctHtml(AppConfig.day_itt, scheduleNumber)); //come here
+                    AppConfig.day_itt = correctHtml(AppConfig.day_itt, scheduleNumber);
+                    System.out.println(AppConfig.day_itt); //come here
                     // System.out.println(AppConfig.day_itt);
 
                     Connection con = ConnectionProvider.getConnection();
@@ -368,7 +370,7 @@ public class CustomPackage extends JFrame {
                     }
 
                     //
-                    extracted_day_itt = null;
+                    extracted_day_itt = "";
                     subPanel22.removeAll();
                     subPanel22.revalidate();
                     subPanel22.repaint();
@@ -380,7 +382,7 @@ public class CustomPackage extends JFrame {
                             try {
                                 FinalPage finalPage = new FinalPage();
                                 AppConfig.previousPage = "FinalCustomPage";
-                                AppConfig.day_itt = null;
+                                AppConfig.day_itt = "";
                                 frame.dispose();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -421,7 +423,7 @@ public class CustomPackage extends JFrame {
 
 
                     //
-                    extracted_day_itt = null;
+                    extracted_day_itt = "";
                     subPanel22.removeAll();
                     subPanel22.revalidate();
                     subPanel22.repaint();
@@ -843,8 +845,8 @@ public class CustomPackage extends JFrame {
     }
 
     public static String correctHtml(String input, int dayNumber) {
-        input = input.replaceAll("null", "Day" + dayNumber);
-        input = input.replaceAll("\\?", "Rupees "); // Unicode for ₹ symbol
+        input = input.replaceAll("null", "<br>");
+        input = input.replaceAll("\\?", "₹"); // Unicode for ₹ symbol
         return input;
     }      
 }

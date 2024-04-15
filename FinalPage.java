@@ -7,6 +7,10 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import javax.swing.border.Border;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import java.util.*;
@@ -16,24 +20,19 @@ import java.awt.event.FocusListener;
 public class FinalPage extends JFrame {
     private JPanel buttonPanel;
     private JPanel contentPanel;
-    private static JLabel stringFinalItninerary;
+    private static JLabel stringLabelFinalItninerary;
     private static Vector<String> itineraryData = new Vector<>();
-    private int priceOfTheDay=0;
+    private int priceOfTheDay = 0;
     JLabel priceLabel;
-    private static final int numberOfButtons = 7; // Main Variable that handles all the Items in this
-    private static String stringItineraryFinal = "<html>This Page Shows your Itinerary. <br> Click on each Day to see what you selected</html>";
+    private static final int numberOfButtons = AppConfig.text_days; // Main Variable that handles all the Items in this
 
     // numberOfButtons, itineraryData (Update this with SQL Query for every Day),
     // buttonText.substring(4) (Take Day informaion from this)
-    //Write Method to get the Price of the Day
+    // Write Method to get the Price of the Day
 
     public FinalPage() throws IOException {
-        
-        Vector<String> itineraryData = new Vector<>();
-        itineraryData.add("Destination: Paris");
-        itineraryData.add("Duration: 3 days");
-        itineraryData.add("Hotel: ABC Hotel");
-        itineraryData.add("Attractions: Eiffel Tower, Louvre Museum");
+        // AppConfig.itineary_ID = 39;
+        // AppConfig.text_days = 3;
 
         JFrame frame = new JFrame("Final Itinerary Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,32 +93,35 @@ public class FinalPage extends JFrame {
         panel1.add(subPanel21, BorderLayout.CENTER);
 
         // SubPanel 3 Layout
-        JButton backButton = new JButton("Back");
-        backButton.setPreferredSize(new Dimension(100, 90));
-        backButton.setBackground(Color.GRAY);
-        backButton.setFont(new Font("Arial", Font.BOLD, 18));
-        backButton.setForeground(Color.white);
-        subPanel31.add(backButton);
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(AppConfig.previousPage.equals("FinalCustomPage")){
-                    try {
-                        CustomPackage finalCustomPage = new CustomPackage();
-                    } catch (IOException exp){
-                        // Handle the IOException here
-                        exp.printStackTrace();
-                    }
-                }else{
-                    // try {
-                    //     PrePackage prePackage = new PrePackage();
-                    // } catch (IOException exp){
-                    //     // Handle the IOException here
-                    //     exp.printStackTrace();
-                    // }
-                }
-            }
-        });
+        // JButton backButton = new JButton("Back");
+        // backButton.setPreferredSize(new Dimension(100, 90));
+        // backButton.setBackground(Color.GRAY);
+        // backButton.setFont(new Font("Arial", Font.BOLD, 18));
+        // backButton.setForeground(Color.white);
+        // subPanel31.add(backButton);
+        // backButton.addActionListener(new ActionListener() {
+        // @Override
+        // public void actionPerformed(ActionEvent e) {
+        // if (AppConfig.previousPage.equals("FinalCustomPage")) {
+        // try {
+        // CustomPackage customPackage = new CustomPackage();
+        // } catch (IOException exp) {
+        // // Handle the IOException here
+        // exp.printStackTrace();
+        // } catch (SQLException e1) {
+        // // TODO Auto-generated catch block
+        // e1.printStackTrace();
+        // }
+        // } else {
+        // // try {
+        // // PrePackage prePackage = new PrePackage();
+        // // } catch (IOException exp){
+        // // // Handle the IOException here
+        // // exp.printStackTrace();
+        // // }
+        // }
+        // }
+        // });
         panel1.add(subPanel31, BorderLayout.EAST);
         frame.add(panel1, BorderLayout.NORTH);
 
@@ -130,21 +132,44 @@ public class FinalPage extends JFrame {
         buttonsPanel.setBackground(Color.BLACK);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        for (int i = 1; i <= numberOfButtons; i++) {
+        try {
+            Connection con = ConnectionProvider.getConnection();
+            String sq = "SELECT COUNT(day_ID) AS c, store FROM cust_day WHERE cus_pack_ID = ? GROUP BY store";
+            PreparedStatement pstmt = con.prepareStatement(sq);
+            pstmt.setInt(1, AppConfig.itineary_ID);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String store = rs.getString("store");
+                itineraryData.add(store);
+            }
+            System.out.println(itineraryData);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        int i = 1;
+        for (i = 1; i <= numberOfButtons; i++) {
+            final int index = i;
             JButton dayButton = createNumberButton(i);
             dayButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
             dayButton.setBackground(Color.BLACK);
             dayButton.setForeground(Color.WHITE);
             dayButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
             dayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+
                     JButton button = (JButton) e.getSource();
                     String buttonText = button.getText();
                     System.out.println("Day Number: " + buttonText.substring(4));
-                    //Write Method to get the Price of the Day
-                    priceLabel.setText("Price: ₹" + priceOfTheDay);
-                    updatePanel3WithRandomText();
+                    // Write Method to get the Price of the Day
+                    priceLabel.setText("Price: ₹" + AppConfig.priceOfItinerary);
+                    AppConfig.stringItineraryFinal = itineraryData.get(index - 1);
+                    System.out.println(AppConfig.stringItineraryFinal);
+                    stringLabelFinalItninerary.setText(AppConfig.stringItineraryFinal);
+                    // updatePanel3WithRandomText();
                 }
             });
             buttonGroup.add(dayButton);
@@ -167,30 +192,50 @@ public class FinalPage extends JFrame {
         frame.add(panel2, BorderLayout.WEST);
 
         // Layout for Panel 3
-        panel3.setLayout(new BorderLayout());
+        // panel3.setLayout(new BorderLayout());
 
-        stringFinalItninerary = new JLabel(stringItineraryFinal);
-        stringFinalItninerary.setFont(new Font("Monospaced", Font.PLAIN, 20));
-        stringFinalItninerary.setHorizontalAlignment(SwingConstants.CENTER);
-        stringFinalItninerary.setForeground(Color.WHITE);
-        panel3.add(stringFinalItninerary, BorderLayout.CENTER);
+        // stringLabelFinalItninerary = new JLabel(AppConfig.stringItineraryFinal);
+        // stringLabelFinalItninerary.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        // stringLabelFinalItninerary.setHorizontalAlignment(SwingConstants.CENTER);
+        // stringLabelFinalItninerary.setForeground(Color.WHITE);
 
-        JButton confirmButton = new JButton("Confirm Your Payment");
-        confirmButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        panel3.add(confirmButton, BorderLayout.SOUTH);
+        // JScrollPane scrollPane = new JScrollPane(stringLabelFinalItninerary);
+        // scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        confirmButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    FinancePage financePage = new FinancePage();
-                    frame.dispose();
-                } catch (IOException exp) {
-                    // Handle the IOException here
-                    exp.printStackTrace();
-                }
-            }
-        });
+        // panel3.add(scrollPane, BorderLayout.CENTER);
+
+        panel3.setLayout(new GridLayout(1, 1));
+        panel3.setBackground(Color.WHITE);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBackground(Color.BLACK);
+        scrollPane.setOpaque(true);
+        panel3.add(scrollPane, 0, 0);
+        
+        stringLabelFinalItninerary = new JLabel(AppConfig.stringItineraryFinal);
+        stringLabelFinalItninerary.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        stringLabelFinalItninerary.setHorizontalAlignment(SwingConstants.CENTER);
+        stringLabelFinalItninerary.setForeground(Color.BLACK);
+        
+        scrollPane.setViewportView(stringLabelFinalItninerary);
+        // JButton confirmButton = new JButton("Confirm Your Payment");
+
+        // confirmButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        // panel3.add(confirmButton, BorderLayout.SOUTH);
+
+        // confirmButton.addActionListener(new ActionListener() {
+        // @Override
+        // public void actionPerformed(ActionEvent e) {
+        // try {
+        // FinancePage financePage = new FinancePage();
+        // frame.dispose();
+        // } catch (IOException exp) {
+        // // Handle the IOException here
+        // exp.printStackTrace();
+        // }
+        // }
+        // });
 
         frame.add(panel3, BorderLayout.CENTER);
 
@@ -202,6 +247,7 @@ public class FinalPage extends JFrame {
         label.setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
         panel4.add(label, BorderLayout.CENTER);
         frame.add(panel4, BorderLayout.SOUTH);
+
     }
 
     public static JButton createNumberButton(int number) {
@@ -210,46 +256,56 @@ public class FinalPage extends JFrame {
         return button;
     }
 
-    public static void updatePanel3WithRandomText() {
-        itineraryData.clear(); // Clear existing data
-        String destination = getRandomCity();
-        int price = getRandomPrice();
-        int duration = new Random().nextInt(5) + 1;
-        String hotel = getRandomHotel();
-        String attractions = getRandomAttractions();
-    
-        itineraryData.add("Destination: " + destination + " - Price: \u20B9" + price); // \u20B9 is the Unicode for the Rupee symbol
-        itineraryData.add("Duration: " + duration + " days");
-        itineraryData.add("Hotel: " + hotel);
-        itineraryData.add("Attractions: " + attractions);
-    
-        // Display updated itinerary data
-        StringBuilder randomText = new StringBuilder("<html>");
-        for (String data : itineraryData) {
-            randomText.append(data).append("<br>");
-        }
-        randomText.append("</html>");
-        stringFinalItninerary.setText(randomText.toString());
-    }
-    
-
-    public static String getRandomCity() {
-        String[] cities = { "Paris", "London", "New York", "Tokyo", "Rome", "Sydney" };
-        return cities[new Random().nextInt(cities.length)];
-    }
-
-    public static String getRandomHotel() {
-        String[] hotels = { "ABC Hotel", "XYZ Resort", "Sunrise Inn", "Grand Plaza", "Ocean View Hotel" };
-        return hotels[new Random().nextInt(hotels.length)];
-    }
-
-    public static String getRandomAttractions() {
-        String[] attractions = { "Eiffel Tower", "Statue of Liberty", "Colosseum", "Taj Mahal", "Great Wall of China" };
-        return attractions[new Random().nextInt(attractions.length)];
-    }
-
-    public static int getRandomPrice() {
-        return new Random().nextInt(901) + 100;
-    }
-    
+    // public static void updatePanel3WithRandomText() {
+    // stringLabelFinalItninerary.setText(AppConfig.stringItineraryFinal);
+    // }
 }
+
+// itineraryData.clear(); // Clear existing data
+// String destination = getRandomCity();
+// int price = getRandomPrice();
+// int duration = new Random().nextInt(5) + 1;
+// String hotel = getRandomHotel();
+// String attractions = getRandomAttractions();
+
+// itineraryData.add("Destination: " + destination + " - Price: \u20B9" +
+// price); // \u20B9 is the Unicode for the
+// // Rupee symbol
+// itineraryData.add("Duration: " + duration + " days");
+// itineraryData.add("Hotel: " + hotel);
+// itineraryData.add("Attractions: " + attractions);
+
+// // Display updated itinerary data
+// StringBuilder randomText = new StringBuilder("<html>");
+// for (String data : itineraryData) {
+// randomText.append(data).append("<br>");
+// }
+// randomText.append("</html>");
+
+// Vector<String> itineraryData = new Vector<>();
+// itineraryData.add("Destination: Paris");
+// itineraryData.add("Duration: 3 days");
+// itineraryData.add("Hotel: ABC Hotel");
+// itineraryData.add("Attractions: Eiffel Tower, Louvre Museum");
+
+// public static String getRandomCity() {
+// String[] cities = { "Paris", "London", "New York", "Tokyo", "Rome", "Sydney"
+// };
+// return cities[new Random().nextInt(cities.length)];
+// }
+
+// public static String getRandomHotel() {
+// String[] hotels = { "ABC Hotel", "XYZ Resort", "Sunrise Inn", "Grand Plaza",
+// "Ocean View Hotel" };
+// return hotels[new Random().nextInt(hotels.length)];
+// }
+
+// public static String getRandomAttractions() {
+// String[] attractions = { "Eiffel Tower", "Statue of Liberty", "Colosseum",
+// "Taj Mahal", "Great Wall of China" };
+// return attractions[new Random().nextInt(attractions.length)];
+// }
+
+// public static int getRandomPrice() {
+// return new Random().nextInt(901) + 100;
+// }
