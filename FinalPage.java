@@ -159,6 +159,25 @@ public class FinalPage extends JFrame {
             dayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    
+                    try {
+                        Connection con = ConnectionProvider.getConnection();
+                        String sq = "SELECT price FROM itinerary WHERE Itinerary_Id = ?";
+                        PreparedStatement pstmt2 = con.prepareStatement(sq);
+                        pstmt2.setInt(1, AppConfig.itineary_ID);
+                        ResultSet rs = pstmt2.executeQuery();
+                    
+                        if (rs.next()) {
+                            AppConfig.priceOfItinerary = rs.getInt("price");
+                        }
+                    } catch (SQLException epp) {
+                        epp.printStackTrace();
+                    } catch (Exception ep) {
+                        ep.printStackTrace();
+                    }
+                    
+
+
 
                     JButton button = (JButton) e.getSource();
                     String buttonText = button.getText();

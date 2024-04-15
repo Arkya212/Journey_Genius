@@ -278,22 +278,19 @@ public class PlanPage extends JFrame {
         textField4.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField4, gbc);
 
-        textField4.addActionListener(new ActionListener() {
+        textField4.addFocusListener(new FocusAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                AppConfig.text_name = textField4.getText();
-                System.out.println("Text entered: " + AppConfig.text_name);
+            public void focusLost(FocusEvent e) {
+                if (textField4.getText().isEmpty()) {
+                    textField4.setText("Trip Name");
+                } else {
+                    AppConfig.text_name = textField4.getText();
+                    System.out.println("Text entered: " + AppConfig.text_name);
+                }
             }
         });
 
         textField4.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (textField4.getText().equals("Trip Name")) {
-                    textField4.setText("");
-                }
-            }
-
             @Override
             public void focusLost(FocusEvent e) {
                 if (textField4.getText().isEmpty()) {

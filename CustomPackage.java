@@ -383,7 +383,7 @@ public class CustomPackage extends JFrame {
 
                         // Close resources
                         insertPstmt.close();
-                        con.close();
+
 
                     } catch (SQLException ep) {
                         ep.printStackTrace();
@@ -396,7 +396,28 @@ public class CustomPackage extends JFrame {
                     subPanel22.repaint();
                     scheduleNumber++;
                     JOptionPane.showMessageDialog(null, "Itinerary created successfully.");
+                    
 
+                    try {
+                        String updateSql = "UPDATE itinerary SET price = ? WHERE Itinerary_ID = ?";
+                        PreparedStatement updatePstmt = con.prepareStatement(updateSql);
+                        updatePstmt.setInt(1, AppConfig.priceOfItinerary); // Set the price value
+                        updatePstmt.setInt(2, AppConfig.itineary_ID); // Set the Itinerary_ID value
+                        int rowsUpdated = updatePstmt.executeUpdate();
+                    
+                        if (rowsUpdated > 0) {
+                            System.out.println("Price updated successfully!");
+                        } else {
+                            System.out.println("No rows updated.");
+                        }
+                    } catch (SQLException epp) {
+                        System.err.println("Error executing SQL update: " + epp.getMessage());
+                        epp.printStackTrace();
+                    } catch (Exception ep) {
+                        System.err.println("Error: " + ep.getMessage());
+                        ep.printStackTrace();
+                    }
+                    
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             try {
