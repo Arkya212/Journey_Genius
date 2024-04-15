@@ -14,13 +14,26 @@ import java.util.Random;
 
 public class CustomPackage extends JFrame {
 
+    JPanel subPanel14 = new JPanel();
+    JPanel subPanel24 = new JPanel();
+    JPanel subPanel34 = new JPanel();
+    JPanel subPanel44 = new JPanel();
+    JPanel subPanel45 = new JPanel();
+    JPanel subPanel22;
+    GridBagLayout gridBagLayout = new GridBagLayout();
+    GridBagConstraints gbc;
     private static int scheduleNumber = 1;
     private static Vector<String> monuments;
     private static Vector<String> restaurants;
     private static Vector<String> cabs;
     private static Vector<String> hotels;
     private static Vector<String> misc;
-    private static Vector<Color> labelColors;
+    private static Vector<Color> monumentsColors;
+    private static Vector<Color> restaurantsColors;
+    private static Vector<Color> cabsColors;
+    private static Vector<Color> hotelsColors;
+    private static Vector<Color> miscColors;
+
     private JLabel label1;
     private static String extracted_day_itt;
     private JLabel packageTitleLabel;
@@ -72,13 +85,20 @@ public class CustomPackage extends JFrame {
         hotels = new Vector<>();
         cabs = new Vector<>();
         misc = new Vector<>();
-        labelColors = new Vector<>();
+        restaurantsColors = new Vector<>();
+        monumentsColors = new Vector<>();
+        hotelsColors = new Vector<>();
+        cabsColors = new Vector<>();
+        miscColors = new Vector<>();
 
         populateRestaurantMatrix();
         populateMonumentsMatrix();
         populateHotelsMatrix();
         populateCabsMatrix();
         populateMiscMatrix();
+
+        // System.out.println("Misc Size" + misc.size());
+        // System.out.println(restaurants.size());
 
         convertToHTMLFormat(restaurants, restaurantMatrix);
         convertToHTMLFormat(monuments, monumentsMatrix);
@@ -90,21 +110,49 @@ public class CustomPackage extends JFrame {
         // System.out.println(item);
         // }
 
-        labelColors = new Vector<>();
-        labelColors.clear();
-
         // Create a Random object
         Random random = new Random();
 
-        // Generate random colors based on the size of the restaurants vector
-        int sizeOfLabels = restaurants.size();
+        // Generate random colors based on the size of the each vector
         // System.out.println(sizeOfLabels);
         for (int i = 0; i < restaurants.size(); i++) {
             int red = random.nextInt(256);
             int green = random.nextInt(256);
             int blue = random.nextInt(256);
-            Color randomColor = new Color(red, green, blue);
-            labelColors.add(randomColor);
+            Color randomColor = new Color(red, green, blue , 100 );
+            restaurantsColors.add(randomColor);
+        }
+
+        for (int i = 0; i < hotels.size(); i++) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            Color randomColor = new Color(red, green, blue , 100 );
+            hotelsColors.add(randomColor);
+        }
+
+        for (int i = 0; i < monuments.size(); i++) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            Color randomColor = new Color(red, green, blue , 100);
+            monumentsColors.add(randomColor);
+        }
+
+        for (int i = 0; i < cabs.size(); i++) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256 );
+            Color randomColor = new Color(red, green, blue , 100);
+            cabsColors.add(randomColor);
+        }
+
+        for (int i = 0; i < misc.size(); i++) {
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+            Color randomColor = new Color(red, green, blue, 100);
+            miscColors.add(randomColor);
         }
 
         JFrame frame = new JFrame("Custom Itinerary Page");
@@ -115,7 +163,7 @@ public class CustomPackage extends JFrame {
 
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
-        JPanel panel4 = new JPanel();
+        JPanel panel4 = new JPanel(); // Contains Everything
         JPanel panel5 = new JPanel();
 
         panel1.setBackground(Color.red);
@@ -179,12 +227,11 @@ public class CustomPackage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        // Come Here
                         try {
-                        PlanPage planPage = new PlanPage();
-                        frame.dispose();
+                            PlanPage planPage = new PlanPage();
+                            frame.dispose();
                         } catch (IOException ex) {
-                        ex.printStackTrace();
+                            ex.printStackTrace();
                         }
                     }
                 });
@@ -206,33 +253,6 @@ public class CustomPackage extends JFrame {
 
             buttonLabelPanel.setOpaque(false);
 
-            if (i > 0) {
-                JButton upButton = new JButton("\u25B2");
-                upButton.setFont(new Font("Arial", Font.PLAIN, 14));
-
-                // Event Lister for Up Button:
-                final int index = i;
-                upButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("Up button clicked for label: " + titleLabels[index]);
-                    }
-                });
-
-                JButton downButton = new JButton("\u25BC");
-                downButton.setFont(new Font("Arial", Font.PLAIN, 14));
-                downButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println("Down button clicked for label: " + titleLabels[index]);
-                    }
-                });
-
-                buttonLabelPanel.add(upButton, BorderLayout.WEST);
-
-                buttonLabelPanel.add(downButton, BorderLayout.EAST);
-            }
-
             JLabel label = new JLabel(titleLabels[i], SwingConstants.CENTER);
             label.setForeground(Color.WHITE);
             label.setFont(new Font("TimesNewRoman", Font.BOLD, 18));
@@ -250,7 +270,7 @@ public class CustomPackage extends JFrame {
         // Layout for Panel 2
         panel2.setLayout(new BorderLayout());
         JPanel subPanel12 = new JPanel();
-        JPanel subPanel22 = new JPanel();
+        subPanel22 = new JPanel();
         JPanel subPanel32 = new JPanel();
 
         subPanel12.setBackground(Color.MAGENTA);
@@ -276,10 +296,10 @@ public class CustomPackage extends JFrame {
         panel2.add(subPanel12, BorderLayout.NORTH);
 
         // subPanel22 Layout
-        GridBagLayout gridBagLayout = new GridBagLayout();
+        gridBagLayout = new GridBagLayout();
         subPanel22.setLayout(gridBagLayout);
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 5, 0);
@@ -323,7 +343,7 @@ public class CustomPackage extends JFrame {
         SubmitPreferenceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                                            
+
                 Component[] components = subPanel22.getComponents();
                 String labelText = "";
                 for (Component component : components) {
@@ -337,7 +357,7 @@ public class CustomPackage extends JFrame {
                 if (labelText.equals("<html></html>") || labelText.equals("")) {
                     JOptionPane.showMessageDialog(null, "Itinerary is Empty!", "Warning",
                             JOptionPane.WARNING_MESSAGE);
-                    // System.out.println(label1.getText()); //Come here
+                    // System.out.println(label1.getText());
                 } else if ((AppConfig.text_days - scheduleNumber) == 0) {
                     packageTitleLabel.setText(
                             "<html><center> Day " + scheduleNumber + " Schedule <br> Number of Days Left: "
@@ -346,25 +366,25 @@ public class CustomPackage extends JFrame {
 
                     AppConfig.day_itt = "<html>" + extracted_day_itt + "</html>";
                     AppConfig.day_itt = correctHtml(AppConfig.day_itt, scheduleNumber);
-                    System.out.println(AppConfig.day_itt); //come here
+                    System.out.println(AppConfig.day_itt);
                     // System.out.println(AppConfig.day_itt);
 
                     Connection con = ConnectionProvider.getConnection();
 
                     try {
                         // Selecting Cus_pack_ID from custom_day_package table
-                                    
+
                         // Inserting values into cust_day table
                         String insertSql = "INSERT INTO cust_day (Cus_pack_ID, Store) VALUES (?, ?)";
                         PreparedStatement insertPstmt = con.prepareStatement(insertSql);
                         insertPstmt.setInt(1, AppConfig.itineary_ID);
                         insertPstmt.setString(2, AppConfig.day_itt);
                         insertPstmt.executeUpdate();
-                        
+
                         // Close resources
                         insertPstmt.close();
                         con.close();
-                    
+
                     } catch (SQLException ep) {
                         ep.printStackTrace();
                     }
@@ -397,30 +417,28 @@ public class CustomPackage extends JFrame {
                                     + AppConfig.priceOfItinerary + "</center></html>");
 
                     AppConfig.day_itt = "<html>" + extracted_day_itt + "</html>";
-                    System.out.println(correctHtml(AppConfig.day_itt, scheduleNumber)); //come here
+                    System.out.println(correctHtml(AppConfig.day_itt, scheduleNumber));
                     // System.out.println(AppConfig.day_itt);
 
                     Connection con = ConnectionProvider.getConnection();
 
                     try {
                         // Selecting Cus_pack_ID from custom_day_package table
-                                    
+
                         // Inserting values into cust_day table
                         String insertSql = "INSERT INTO cust_day (Cus_pack_ID, Store) VALUES (?, ?)";
                         PreparedStatement insertPstmt = con.prepareStatement(insertSql);
                         insertPstmt.setInt(1, AppConfig.itineary_ID);
                         insertPstmt.setString(2, AppConfig.day_itt);
                         insertPstmt.executeUpdate();
-                        
+
                         // Close resources
                         insertPstmt.close();
                         con.close();
-                    
+
                     } catch (SQLException ep) {
                         ep.printStackTrace();
                     }
-
-
 
                     //
                     extracted_day_itt = "";
@@ -435,11 +453,11 @@ public class CustomPackage extends JFrame {
         frame.add(panel2, BorderLayout.WEST);
 
         // Layout for Panel 4
-        JPanel subPanel14 = new JPanel();
-        JPanel subPanel24 = new JPanel();
-        JPanel subPanel34 = new JPanel();
-        JPanel subPanel44 = new JPanel();
-        JPanel subPanel45 = new JPanel();
+        subPanel14 = new JPanel();
+        subPanel24 = new JPanel();
+        subPanel34 = new JPanel();
+        subPanel44 = new JPanel();
+        subPanel45 = new JPanel();
 
         subPanel14.setBackground(Color.RED);
         subPanel24.setBackground(Color.WHITE);
@@ -451,23 +469,23 @@ public class CustomPackage extends JFrame {
         // Layout for subPane14
         // System.out.println(sizeOfLabels);
 
-        subPanel14 = addReserves(labelColors, hotels, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        subPanel14 = addReserves(hotelsColors, hotels, hotels.size(), gridBagLayout, gbc, subPanel22);
         panel4.add(subPanel14);
 
         // Layout for subPane24
-        subPanel24 = addReserves(labelColors, restaurants, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        subPanel24 = addReserves(restaurantsColors, restaurants, restaurants.size(), gridBagLayout, gbc, subPanel22);
         panel4.add(subPanel24);
 
         // Layout for subPane34
-        subPanel34 = addReserves(labelColors, monuments, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        subPanel34 = addReserves(monumentsColors, monuments, monuments.size(), gridBagLayout, gbc, subPanel22);
         panel4.add(subPanel34);
 
         // Layout for subPane44
-        subPanel44 = addReserves(labelColors, misc, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        subPanel44 = addReserves(miscColors, misc, misc.size(), gridBagLayout, gbc, subPanel22);
         panel4.add(subPanel44);
 
         // Layout for subPane45
-        subPanel45 = addReserves(labelColors, cabs, sizeOfLabels, gridBagLayout, gbc, subPanel22);
+        subPanel45 = addReserves(cabsColors, cabs, cabs.size(), gridBagLayout, gbc, subPanel22);
         panel4.add(subPanel45);
         frame.add(panel4, BorderLayout.CENTER);
 
@@ -521,14 +539,16 @@ public class CustomPackage extends JFrame {
                     String extractedText = indexString.substring(startIndex, endIndex);
                     // presentChoice = extractedText;
 
-                    int priceStartIndex = indexString.indexOf("<br>", endIndex) + "<br>".length();
+                    int priceStartIndex = indexString.indexOf("<br>", endIndex) +
+                            "<br>".length();
 
                     int priceEndIndex = indexString.indexOf("<br>", priceStartIndex);
                     if (priceEndIndex == -1) {
                         priceEndIndex = indexString.indexOf("</html>", priceStartIndex);
                     }
 
-                    String priceSubstring = indexString.substring(priceStartIndex, priceEndIndex);
+                    String priceSubstring = indexString.substring(priceStartIndex,
+                            priceEndIndex);
 
                     // Extract the integer from the price substring
                     // int price = extractInteger(priceSubstring);
@@ -551,12 +571,10 @@ public class CustomPackage extends JFrame {
                             + AppConfig.priceOfItinerary
                             + "</center></html>");
 
-                    // System.out.println(names.get(index)); //Come here Shrey Baby
-                    extracted_day_itt = extracted_day_itt + "<br>" + names.get(index).replaceAll("<html>|</html>", "");
-                    // correctHtml(extracted_day_itt, scheduleNumber);
-                    // System.out.println(extracted_day_itt);
-                    // System.out.println(scheduleNumber);
-                    // System.out.println("Price added to priceOfItinerary: " + priceOfItinerary);
+                    // System.out.println(names.get(index));
+                    extracted_day_itt = extracted_day_itt + "<br>" +
+                            names.get(index).replaceAll("<html>|</html>", "");
+                    correctHtml(extracted_day_itt, scheduleNumber);
                 }
             });
             checkBoxPanel.add(addButton);
@@ -599,7 +617,16 @@ public class CustomPackage extends JFrame {
             subPanel.add(labelPanel, BorderLayout.CENTER);
         }
 
-        return subPanel;
+        // Adding JScrollPane to subPanel
+        JScrollPane scrollPane = new JScrollPane(subPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        // Wrap JScrollPane inside a JPanel
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
+        wrapperPanel.add(scrollPane, BorderLayout.CENTER);
+
+        return wrapperPanel;
     }
 
     private static String extractInfo(String htmlString) {
@@ -653,9 +680,7 @@ public class CustomPackage extends JFrame {
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
 
-            int count = 0;
-            while (count < 4 && rs.next()) {
-                count++;
+            while (rs.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Restaurant Name
                 row.add("Avg Price: ₹" + rs.getInt("Avg_Price_for_2")); // Avg Price for 2 in INR
@@ -696,9 +721,7 @@ public class CustomPackage extends JFrame {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
-            int count = 0;
-            while (rs.next() && count < 4) {
-                count++;
+            while (rs.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Monument Name
                 row.add("Price: ₹" + rs.getInt("Price")); // Price in INR
@@ -736,9 +759,7 @@ public class CustomPackage extends JFrame {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
-            int count = 0;
-            while (rs.next() && count < 4) {
-                count++;
+            while (rs.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Hotel Name
                 row.add("Price: ₹" + rs.getInt("price")); // Price in INR
@@ -776,9 +797,7 @@ public class CustomPackage extends JFrame {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
-            int count = 0;
-            while (rs.next() && count < 4) {
-                count++;
+            while (rs.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("first_name") + " " + rs.getString("last_name")); // Driver Name
                 row.add("Price: ₹" + rs.getInt("price"));
@@ -816,9 +835,7 @@ public class CustomPackage extends JFrame {
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, AppConfig.text_city);
             rs = pstmt.executeQuery();
-            int count = 0;
-            while (rs.next() && count < 4) {
-                count++;
+            while (rs.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(rs.getString("Name")); // Name
                 row.add("Price: ₹ " + rs.getInt("price")); // Price in INR
@@ -848,5 +865,5 @@ public class CustomPackage extends JFrame {
         input = input.replaceAll("null", "<br>");
         input = input.replaceAll("\\?", "₹"); // Unicode for ₹ symbol
         return input;
-    }      
+    }
 }
