@@ -2,22 +2,32 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 import javax.swing.border.Border;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-
+import java.util.ArrayList;
 
 public class PlanPage extends JFrame {
     public int numberOfItinerary = 6;
 
-
     public PlanPage() throws IOException {
+        ArrayList<String> validCities = new ArrayList<>();
+        validCities.add("banglore");
+        validCities.add("mumbai");
+        validCities.add("chennai");
 
         JFrame frame = new JFrame("Plan Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,11 +41,6 @@ public class PlanPage extends JFrame {
         JPanel panel4 = new JPanel();
         JPanel panel5 = new JPanel();
 
-        // panel1.setBackground(Color.red);
-        // panel2.setBackground(Color.green);
-        // panel3.setBackground(Color.yellow);
-        // panel4.setBackground(Color.magenta);
-        // panel5.setBackground(Color.blue);
         panel1.setBackground(Color.red);
         panel2.setBackground(Color.green);
         panel3.setBackground(Color.yellow);
@@ -136,45 +141,34 @@ public class PlanPage extends JFrame {
         label1.setForeground(Color.WHITE);
         subPanel22.add(label1, gbc);
 
-        // Create and add text field for "Your City" 
+        // Create and add text field for "Your City"
         gbc.gridy = 1;
-        // JTextField textField1 = new JTextField("Your City");
-        JTextField textField1 = new JTextField("delhi");
+        JTextField textField1 = new JTextField("Enter City");
         textField1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField1.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField1, gbc);
 
-        textField1.addActionListener(new ActionListener() {
+        textField1.addFocusListener(new FocusAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = textField1.getText();
-                System.out.println("Text entered: " + text);
+            public void focusGained(FocusEvent e) {
+                if (textField1.getText().equals("Enter City")) {
+                    textField1.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                String enteredCity = textField1.getText().toLowerCase();
+                if (!validCities.contains(enteredCity)) {
+                    System.out.println("Invalid City: " + enteredCity);
+                    JOptionPane.showMessageDialog(frame, "Invalid City", "Warning", JOptionPane.WARNING_MESSAGE);
+                    textField1.setText("Enter City"); // Clear the text field
+                } else {
+                    AppConfig.text_city = textField1.getText().toLowerCase();
+                    System.out.println("Text entered: " + AppConfig.text_city);
+                }
             }
         });
-
-        // DocumentListener to capture changes in the text field
-
-        textField1.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            private void updateText() {
-                AppConfig.text_city = textField1.getText();
-            }
-        });
-
 
         // Create and add button "Know Your City"
         gbc.gridy = 2;
@@ -182,59 +176,52 @@ public class PlanPage extends JFrame {
         button.setFont(new Font("Times New Roman", Font.PLAIN, 18));
         subPanel22.add(button, gbc);
 
-        // Add vertical spacing between the two groups
-        // gbc.gridy = 3;
-        // gbc.insets = new Insets(50, 0, 0, 0); // Add top margin of 50 pixels
-        // subPanel22.add(new JLabel(), gbc); // Add an empty label to create the spacing
-
-
         // Create and add label for "Start-date"
-
-
-        JLabel label2 = new JLabel("Start date");
-        label2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        JLabel label2 = new JLabel("Date to Start your Journey");
+        label2.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         label2.setForeground(Color.WHITE);
         subPanel22.add(label2, gbc);
 
-        // Create and add text field for "start-date" 
+        // Create and add text field for "start-date"
         gbc.gridy = 3;
-        // JTextField textField2 = new JTextField("YYYY-MM-DD");
-        JTextField textField2 = new JTextField("1999-12-12");
+        JTextField textField2 = new JTextField("YYYY-MM-DD");
         textField2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField2.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField2, gbc);
 
-        textField2.addActionListener(new ActionListener() {
+        textField2.addFocusListener(new FocusAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = textField2.getText();
-                System.out.println("Text entered: " + text);
+            public void focusGained(FocusEvent e) {
+                if (textField2.getText().equals("YYYY-MM-DD")) {
+                    textField2.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                String dateString = textField2.getText();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                dateFormat.setLenient(false); // Disable lenient parsing
+
+                try {
+                    Date enteredDate = dateFormat.parse(dateString);
+                    Date currentDate = new Date();
+
+                    if (enteredDate.after(currentDate)) {
+                        AppConfig.text_Start = dateFormat.format(enteredDate);;
+                        System.out.println("Valid date: " + AppConfig.text_Start);
+                    } else {
+                        System.out.println("Invalid date: " + enteredDate);
+                        JOptionPane.showMessageDialog(frame, "Invalid date", "Warning", JOptionPane.WARNING_MESSAGE);
+                        textField2.setText("YYYY-MM-DD");
+                    }
+                } catch (ParseException ex) {
+                    System.out.println("Invalid date format: " + dateString);
+                    JOptionPane.showMessageDialog(frame, "Invalid date format", "Error", JOptionPane.ERROR_MESSAGE);
+                    textField2.setText("YYYY-MM-DD");
+                }
             }
         });
-
-        // DocumentListener to capture date
-
-        textField2.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            private void updateText() {
-                AppConfig.text_Start = textField2.getText();
-            }
-        });
-
 
 
         // Create and add label for "total days"
@@ -243,51 +230,41 @@ public class PlanPage extends JFrame {
         label3.setForeground(Color.WHITE);
         subPanel22.add(label3, gbc);
 
-                // Create and add text field for "Your City" 
+        // Create and add text field for "Your City"
         gbc.gridy = 4;
-        JTextField textField3 = new JTextField("Days Count");
+        JTextField textField3 = new JTextField("Enter Days");
         textField3.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField3.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField3, gbc);
 
-        textField3.addActionListener(new ActionListener() {
+        textField3.addFocusListener(new FocusAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = textField3.getText();
-                try {
-                    int daysCount = Integer.parseInt(text);
-                    System.out.println("Integer entered: " + daysCount);
-                } catch (NumberFormatException ex) {
-                    System.out.println("Invalid input. Please enter an integer.");
+            public void focusGained(FocusEvent e) {
+                if (textField3.getText().equals("Enter Days")) {
+                    textField3.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField3.getText().isEmpty()) {
+                    textField3.setText("Enter Days");
                 }
             }
         });
 
-        // DocumentListener to capture changes in the text field
-        textField3.getDocument().addDocumentListener(new DocumentListener() {
+        textField3.addFocusListener(new FocusAdapter() {
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            private void updateText() {
+            public void focusLost(FocusEvent e) {
                 String text = textField3.getText();
                 try {
                     int daysCount = Integer.parseInt(text);
                     AppConfig.text_days = daysCount;
+                    System.out.println("Integer entered: " + AppConfig.text_days);
                 } catch (NumberFormatException ex) {
-                    // Handle the exception
-                    AppConfig.text_days = null ; // or set it to null or handle it as per your requirement
+                    System.out.println("Invalid input. Please enter an integer.");
+                    JOptionPane.showMessageDialog(frame, "Invalid input. Please enter an integer.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    textField3.setText(""); // Clear the text field
                 }
             }
         });
@@ -298,10 +275,10 @@ public class PlanPage extends JFrame {
         label4.setForeground(Color.WHITE);
         subPanel22.add(label4, gbc);
 
-        // Create and add text field for "Your City" 
+        // Create and add text field for "Your City"
         gbc.gridy = 5;
-        // JTextField textField4 = new JTextField("Trip Name");
-        JTextField textField4 = new JTextField("delhi_trip");
+        JTextField textField4 = new JTextField("Trip Name");
+        // JTextField textField4 = new JTextField("delhi_trip");
         textField4.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         textField4.setPreferredSize(new Dimension(200, 40));
         subPanel22.add(textField4, gbc);
@@ -309,37 +286,26 @@ public class PlanPage extends JFrame {
         textField4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String text = textField3.getText();
-                System.out.println("Text entered: " + text);
-            }
-        });
-
-        // DocumentListener to capture changes in the text field
-
-        textField4.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateText();
-            }
-
-            private void updateText() {
                 AppConfig.text_name = textField4.getText();
+                System.out.println("Text entered: " + AppConfig.text_name);
             }
         });
 
+        textField4.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField4.getText().equals("Trip Name")) {
+                    textField4.setText("");
+                }
+            }
 
-
-
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField4.getText().isEmpty()) {
+                    textField4.setText("Trip Name");
+                }
+            }
+        });
 
         // Create and add label "Choose"
         gbc.gridy = 6;
@@ -350,20 +316,19 @@ public class PlanPage extends JFrame {
         subPanel22.add(label5, gbc);
 
         gbc.gridy = 7;
-        JButton button1 = new JButton("Custom Package");
-        button1.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        subPanel22.add(button1, gbc);
+        JButton customButton = new JButton("Custom Package");
+        customButton.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        subPanel22.add(customButton, gbc);
 
         gbc.gridy = 8;
-        JButton button2 = new JButton("Pre-Package");
-        button2.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        JButton prePackageButton = new JButton("Pre-Package");
+        prePackageButton.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         gbc.gridwidth = 2;
-        subPanel22.add(button2, gbc);
+        subPanel22.add(prePackageButton, gbc);
 
         panel2.add(subPanel22, BorderLayout.CENTER);
 
         frame.add(panel2, BorderLayout.WEST);
-
 
         // Add Layout for Panel 4
         // Create top and bottom panels
@@ -387,7 +352,8 @@ public class PlanPage extends JFrame {
         cityImageLabel.setBounds(0, 0, cityLogoWidth, cityLogoHeight);
         topPanel.add(cityImageLabel);
 
-        JLabel stringLabel = new JLabel("<html><center>Remember that happiness<br>is a way of travel,<br>not a destination.</center></html>");
+        JLabel stringLabel = new JLabel(
+                "<html><center>Remember that happiness<br>is a way of travel,<br>not a destination.</center></html>");
         stringLabel.setFont(new Font("Monospaced", Font.PLAIN, 20));
         stringLabel.setHorizontalAlignment(SwingConstants.CENTER);
         stringLabel.setForeground(Color.WHITE);
@@ -406,15 +372,17 @@ public class PlanPage extends JFrame {
 
         frame.add(panel4, BorderLayout.CENTER);
 
-
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // String cityName = textField1.getText();
-                
-                // Query the database to retrieve the image path and description based on the city name
-                // Assuming you have a method to retrieve the image path and description from the database
-                // You need to replace "getImagePathAndDescriptionFromDatabase" with the actual method
+
+                // Query the database to retrieve the image path and description based on the
+                // city name
+                // Assuming you have a method to retrieve the image path and description from
+                // the database
+                // You need to replace "getImagePathAndDescriptionFromDatabase" with the actual
+                // method
                 // that queries the database and returns the image path and description.
                 Connection con = null;
                 PreparedStatement pstmt = null;
@@ -432,21 +400,26 @@ public class PlanPage extends JFrame {
                         String description = rs.getString("Information");
                         ImageIcon cityImageIcon = new ImageIcon(imagePath);
                         Image cityImg = cityImageIcon.getImage();
-                        Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth, cityLogoHeight, Image.SCALE_SMOOTH);
+                        Image cityResizedImg = cityImg.getScaledInstance(cityLogoWidth, cityLogoHeight,
+                                Image.SCALE_SMOOTH);
                         ImageIcon cityResizedIcon = new ImageIcon(cityResizedImg);
                         cityImageLabel.setIcon(cityResizedIcon);
                         stringLabel.setText("<html><center>" + description + "</center></html>");
                     } else {
                         cityImageLabel.setIcon(null);
-                        stringLabel.setText("<html><center>No data found for " + AppConfig.text_city + "</center></html>");
+                        stringLabel
+                                .setText("<html><center>No data found for " + AppConfig.text_city + "</center></html>");
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 } finally {
                     try {
-                        if (rs != null) rs.close();
-                        if (pstmt != null) pstmt.close();
-                        if (con != null) con.close();
+                        if (rs != null)
+                            rs.close();
+                        if (pstmt != null)
+                            pstmt.close();
+                        if (con != null)
+                            con.close();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
@@ -454,24 +427,24 @@ public class PlanPage extends JFrame {
             }
         });
 
-        button2.addActionListener(new ActionListener() {
+        prePackageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Instantiate the PrePackage frame
                 Connection con = null;
                 PreparedStatement pstmt = null;
                 ResultSet rs = null;
-        
+
                 try {
                     con = ConnectionProvider.getConnection();
                     String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
                     pstmt = con.prepareStatement(sql);
-                    pstmt.setString(1, AppConfig.text_name); // Assuming text_name is defined elsewhere
-                    pstmt.setString(2, AppConfig.text_Start); // Assuming text_Start is defined elsewhere
-                    pstmt.setInt(3, AppConfig.text_days); // Assuming text_days is defined elsewhere
-                    pstmt.setString(4, AppConfig.text_city); // Assuming text_city is defined elsewhere
-                    pstmt.setInt(5, AppConfig.User_id); // Assuming user_id is defined elsewhere
-        
+                    pstmt.setString(1, AppConfig.text_name);
+                    pstmt.setString(2, AppConfig.text_Start);
+                    pstmt.setInt(3, AppConfig.text_days);
+                    pstmt.setString(4, AppConfig.text_city);
+                    pstmt.setInt(5, AppConfig.User_id);
+
                     // Execute the prepared statement
                     int rowsAffected = pstmt.executeUpdate();
                     if (rowsAffected > 0) {
@@ -483,40 +456,36 @@ public class PlanPage extends JFrame {
                     ex.printStackTrace();
                 } finally {
                     try {
-                        if (rs != null) rs.close();
-                        if (pstmt != null) pstmt.close();
-                        if (con != null) con.close();
+                        if (rs != null)
+                            rs.close();
+                        if (pstmt != null)
+                            pstmt.close();
+                        if (con != null)
+                            con.close();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
                 }
                 try {
-
                     PrePackage prePackageFrame = new PrePackage();
                     frame.dispose();
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
 
             }
         });
-        
 
-
-
-        
-        button1.addActionListener(new ActionListener() {
+        customButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 Connection con = null;
                 PreparedStatement pstmt = null;
                 ResultSet rs = null;
-        
+
                 try {
                     con = ConnectionProvider.getConnection();
                     String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
@@ -526,7 +495,7 @@ public class PlanPage extends JFrame {
                     pstmt.setInt(3, AppConfig.text_days); // Assuming text_days is defined elsewhere
                     pstmt.setString(4, AppConfig.text_city); // Assuming text_city is defined elsewhere
                     pstmt.setInt(5, AppConfig.User_id); // Assuming user_id is defined elsewhere
-        
+
                     // Execute the prepared statement
                     int rowsAffected = pstmt.executeUpdate();
                     if (rowsAffected > 0) {
@@ -538,17 +507,20 @@ public class PlanPage extends JFrame {
                     ex.printStackTrace();
                 } finally {
                     try {
-                        if (rs != null) rs.close();
-                        if (pstmt != null) pstmt.close();
-                        if (con != null) con.close();
+                        if (rs != null)
+                            rs.close();
+                        if (pstmt != null)
+                            pstmt.close();
+                        if (con != null)
+                            con.close();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                     }
-                } 
+                }
                 // Instantiate the PrePackage frame
                 try {
                     CustomPackage CustomPageFrame = new CustomPackage();
-                    frame.dispose(); 
+                    frame.dispose();
                 } catch (IOException | SQLException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -556,12 +528,9 @@ public class PlanPage extends JFrame {
 
             }
         });
-        
-        
-        
-        
+
         /*
-         * Purchased Itineary 
+         * Purchased Itineary
          * 
          * 
          * 
@@ -574,64 +543,118 @@ public class PlanPage extends JFrame {
         JPanel subHistPanel1 = new JPanel();
         JPanel subHistPanel2 = new JPanel();
         JPanel subButtonPanel = new JPanel();
-        // subHistPanel1.setBackground(Color.RED);
-        // subHistPanel2.setBackground(Color.BLACK);
-        // subButtonPanel.setBackground(Color.BLUE);
+
         subHistPanel1.setBackground(Color.BLACK);
         subHistPanel2.setBackground(Color.BLACK);
         subButtonPanel.setBackground(Color.BLACK);
         panel3.setLayout(new BorderLayout());
 
-        // Add subHistPanel1 to panel3 with specified constraints
-        subHistPanel1.setPreferredSize(new Dimension(100, 50));
+        // //Layout for subHistPanel1
+        subHistPanel1.setPreferredSize(new Dimension(100, 80));
         JLabel historyLabel = new JLabel("<html>Purchased<br>Itineraries</html>", SwingConstants.CENTER);
-        historyLabel.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        historyLabel.setFont(new Font("Times New Roman", Font.BOLD, 22));
         historyLabel.setForeground(Color.WHITE);
         subHistPanel1.add(historyLabel);
         panel3.add(subHistPanel1, BorderLayout.NORTH);
 
-        subHistPanel2.setLayout(new GridLayout(numberOfItinerary, 1));
+        // Layout for subHistPanel2
+        // Set the layout of subHistPanel2
+        subHistPanel2.setLayout(new GridLayout(0, 1));
+
+        // Create a JScrollPane with vertical scrollbar policy
+        JScrollPane scrollPane = new JScrollPane(subHistPanel2);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        // Add the scroll pane to your panel
+        panel3.add(scrollPane, BorderLayout.CENTER);
+
+        // Rest of your code remains unchanged
         ButtonGroup buttonGroup = new ButtonGroup();
-        
-        
+
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             con = ConnectionProvider.getConnection();
             String sql = "SELECT Itinerary_Name FROM Itinerary WHERE User_id = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, AppConfig.User_id);
             rs = pstmt.executeQuery();
-        
+
             // Iterate over the ResultSet to retrieve itinerary names
             while (rs.next()) {
                 String itineraryName = rs.getString("Itinerary_Name");
                 // Generate radio button for each itinerary name
                 JRadioButton radioButton = generateRadioButton(itineraryName);
+                radioButton.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the font size here
                 buttonGroup.add(radioButton);
                 JPanel optionPanel = new JPanel();
                 optionPanel.add(radioButton);
                 optionPanel.setBackground(Color.BLACK);
                 subHistPanel2.add(optionPanel);
             }
-        
+
         } catch (SQLException e) {
             // Handle SQL exception appropriately, e.g., log or display error message
             e.printStackTrace();
         } finally {
-            // Close resources in the reverse order of their creation to prevent resource leaks
+            // Close resources in the reverse order of their creation to prevent resource
+            // leaks
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (con != null) con.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (con != null)
+                    con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
 
-        panel3.add(subHistPanel2, BorderLayout.CENTER);
+        // subHistPanel2.setLayout(new GridLayout(numberOfItinerary, 1));
+        // ButtonGroup buttonGroup = new ButtonGroup();
+
+        // Connection con = null;
+        // PreparedStatement pstmt = null;
+        // ResultSet rs = null;
+
+        // try {
+        // con = ConnectionProvider.getConnection();
+        // String sql = "SELECT Itinerary_Name FROM Itinerary WHERE User_id = ?";
+        // pstmt = con.prepareStatement(sql);
+        // pstmt.setInt(1, AppConfig.User_id);
+        // rs = pstmt.executeQuery();
+
+        // // Iterate over the ResultSet to retrieve itinerary names
+        // while (rs.next()) {
+        // String itineraryName = rs.getString("Itinerary_Name");
+        // // Generate radio button for each itinerary name
+        // JRadioButton radioButton = generateRadioButton(itineraryName);
+        // buttonGroup.add(radioButton);
+        // JPanel optionPanel = new JPanel();
+        // optionPanel.add(radioButton);
+        // optionPanel.setBackground(Color.BLACK);
+        // subHistPanel2.add(optionPanel);
+        // }
+
+        // } catch (SQLException e) {
+        // // Handle SQL exception appropriately, e.g., log or display error message
+        // e.printStackTrace();
+        // } finally {
+        // // Close resources in the reverse order of their creation to prevent resource
+        // leaks
+        // try {
+        // if (rs != null) rs.close();
+        // if (pstmt != null) pstmt.close();
+        // if (con != null) con.close();
+        // } catch (SQLException e) {
+        // e.printStackTrace();
+        // }
+        // }
+
+        // panel3.add(subHistPanel2, BorderLayout.CENTER);
 
         JButton submitButton = new JButton("Choose Itinerary");
         submitButton.setFont(new Font("Times New Roman", Font.PLAIN, 18));
@@ -655,22 +678,24 @@ public class PlanPage extends JFrame {
                     }
                 }
 
-                // Query the database to retrieve the itinerary ID based on the selected itinerary name
+                // Query the database to retrieve the itinerary ID based on the selected
+                // itinerary name
                 int selectedItineraryID = -1; // Initialize with a default value
                 int day_count = -1;
-                
+
                 try (Connection con = ConnectionProvider.getConnection();
-                     PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
-                    
+                        PreparedStatement pstmt = con.prepareStatement(
+                                "SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
+
                     pstmt.setString(1, selectedItineraryName);
-                    
+
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
                             day_count = rs.getInt("no_of_days");
-    
+
                         }
-                        if (selectedItineraryID != -1 && day_count!=-1) {
+                        if (selectedItineraryID != -1 && day_count != -1) {
                             AppConfig.itineary_ID = selectedItineraryID;
                             AppConfig.text_days = day_count;
                             FinalPage nextPage = new FinalPage();
@@ -687,8 +712,6 @@ public class PlanPage extends JFrame {
                     ex.printStackTrace();
                     // Handle SQL exception appropriately, e.g., log or display error message
                 }
-                
-
 
                 // Redirect to the NextPage and pass the selected itinerary ID
 
@@ -703,7 +726,6 @@ public class PlanPage extends JFrame {
          * purchased itineary over
          */
 
-
         // Layout for Panel 5
         panel5.setLayout(new BorderLayout());
         JLabel label = new JLabel("Made with Love at BITS Pilani");
@@ -713,8 +735,7 @@ public class PlanPage extends JFrame {
         panel5.add(label, BorderLayout.CENTER);
 
         frame.add(panel5, BorderLayout.SOUTH);
-        
-                
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -730,12 +751,6 @@ public class PlanPage extends JFrame {
 
             }
         });
-          
-
-
-
-
-
 
     }
 
