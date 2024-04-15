@@ -659,33 +659,60 @@ public class PlanPage extends JFrame {
 
                 // Query the database to retrieve the itinerary ID based on the selected itinerary name
                 int selectedItineraryID = -1; // Initialize with a default value
-                int day_count=-1;
+                int day_count = -1;
+                
                 try (Connection con = ConnectionProvider.getConnection();
-                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
+                     PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
+                    
                     pstmt.setString(1, selectedItineraryName);
+                    
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
                             day_count = rs.getInt("no_of_days");
-    
-                        }
-                        if (selectedItineraryID != -1 && day_count!=-1) {
-                            AppConfig.itineary_ID = selectedItineraryID;
-                            AppConfig.text_days = day_count;
-                            FinalPage nextPage = new FinalPage();
-                            nextPage.setVisible(true);
-                            // Close or hide the current frame if needed
                         } else {
-                            // Handle the case where the selected itinerary ID is not found
+                            // Handle the case where the itinerary name is not found
+                            System.out.println("Itinerary not found.");
+                            return; // Exit the method
                         }
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                    }
+                    
+                    try (PreparedStatement pstmt2 = con.prepareStatement("SELECT COUNT(*) FROM cust_day WHERE Cus_pack_ID = ?")) {
+                        pstmt2.setInt(1, selectedItineraryID);
+                        
+                        try (ResultSet rs2 = pstmt2.executeQuery()) {
+                            if (rs2.next()) {
+                                int cont = rs2.getInt("Count(*)");
+                                
+                                if (cont != 0 && selectedItineraryID != -1 && day_count != -1) {
+                                    AppConfig.itineary_ID = selectedItineraryID;
+                                    AppConfig.text_days = day_count;
+                                    FinalPage nextPage = new FinalPage();
+                                    nextPage.setVisible(true);
+                                    // Close or hide the current frame if needed
+                                }else if (selectedItineraryID != -1 && day_count != -1){
+                                    AppConfig.itineary_ID = selectedItineraryID;
+                                    PrePackageFinalPage pp = new PrePackageFinalPage();
+                                    pp.setVisible(true);
+
+                                }else {
+                                    // Handle the case where the count is zero or the IDs are invalid
+                                    System.out.println("Invalid data.");
+                                }
+                            }
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    } catch (SQLException ep) {
+                        ep.printStackTrace();
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     // Handle SQL exception appropriately, e.g., log or display error message
                 }
+                
+
 
                 // Redirect to the NextPage and pass the selected itinerary ID
 
