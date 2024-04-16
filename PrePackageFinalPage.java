@@ -22,7 +22,12 @@ import java.util.ArrayList;
 
 public class PrePackageFinalPage extends JFrame {
     private static JLabel stringLabelFinalItninerary;
-    Vector<Vector<String>> selectedItinerary = new Vector<>();
+    Vector<String> resultStrings = new Vector<>();
+    Vector<String> restaurantForAllDays = new Vector<>();
+    Vector<String> hotelForAllDays = new Vector<>();
+    Vector<String> monumentsForAllDays = new Vector<>();
+    Vector<String> cabsForAllDays = new Vector<>();
+    Vector<String> miscForAllDays = new Vector<>();
     private static Vector<String> itineraryData = new Vector<>();
     Vector<Vector<String>> data = new Vector();
     private int priceOfTheDay = 0;
@@ -89,6 +94,13 @@ public class PrePackageFinalPage extends JFrame {
         frame.setLayout(new BorderLayout(5, 3));
         frame.setVisible(true);
 
+        // Populating all arrays by HTML tags
+        // populateRestaurant(connection);
+        // populateHotel(connection);
+        // populateMonuments(connection);
+        // populateCabs(connection);
+        // populateMisc(connection);
+
         // Panel 1 Layout
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -152,6 +164,7 @@ public class PrePackageFinalPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    @SuppressWarnings("unused")
                     PrePackage prePackage = new PrePackage();
                     frame.dispose();
                 } catch (IOException | SQLException exp) {
@@ -205,7 +218,7 @@ public class PrePackageFinalPage extends JFrame {
                     priceLabel.setText("Price: ₹" + AppConfig.priceOfItinerary);
                     AppConfig.stringItineraryFinal = itineraryData.get(index - 1);
                     System.out.println(AppConfig.stringItineraryFinal);
-                    stringLabelFinalItninerary.setText(AppConfig.stringItineraryFinal);
+                    stringLabelFinalItninerary.setText(resultStrings.get(index - 1)); // Update label from resultStrings
                     // updatePanel3WithRandomText();
                 }
             });
@@ -291,6 +304,43 @@ public class PrePackageFinalPage extends JFrame {
         JButton button = new JButton("Day " + number);
 
         return button;
+    }
+
+    public void combineIntoResultStrings() {
+        StringBuilder htmlContent = new StringBuilder("<html>");
+
+        // Check if all vectors have the same size
+        int size = restaurantForAllDays.size(); // Assuming all vectors have the same size
+        for (int i = 0; i < size; i++) {
+            htmlContent.append("<b>").append(restaurantForAllDays.get(i)).append("</b><br>");
+            htmlContent.append(hotelForAllDays.get(i)).append("<br>");
+            htmlContent.append(monumentsForAllDays.get(i)).append("<br>");
+            htmlContent.append(cabsForAllDays.get(i)).append("<br>");
+            htmlContent.append(miscForAllDays.get(i)).append("<br><br>");
+        }
+
+        htmlContent.append("</html>");
+        resultStrings.add(htmlContent.toString());
+    }
+
+    public void populateRestaurant(Connection connection) throws SQLException {
+        // Write here
+    }
+
+    public void populateHotel(Connection connection) throws SQLException {
+        // Write similar code for populating the hotelForAllDays vector
+    }
+
+    public void populateMonuments(Connection connection) throws SQLException {
+        // Write similar code for populating the monumentsForAllDays vector
+    }
+
+    public void populateCabs(Connection connection) throws SQLException {
+        // Write similar code for populating the cabsForAllDays vector
+    }
+
+    public void populateMisc(Connection connection) throws SQLException {
+        // Write similar code for populating the miscForAllDays vector
     }
 }
 

@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
@@ -142,6 +141,7 @@ public class PrePackage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Instantiate the PrePackage frame
+                @SuppressWarnings("unused")
                 PlanPage PlanPageFrame;
                 try {
                     PlanPageFrame = new PlanPage();
@@ -246,6 +246,7 @@ public class PrePackage extends JFrame {
                         System.out.println("Total Price" + AppConfig.prePackagePriceOfItinerary);
                         System.out.println("Total Days: " + AppConfig.prePackagetext_days);
                         try {
+                            @SuppressWarnings("unused")
                             PrePackageFinalPage prePackageFinalPage = new PrePackageFinalPage();
                             frame.dispose();
                         } catch (IOException ex) {
