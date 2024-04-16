@@ -120,6 +120,7 @@ public class Welcome extends JFrame{
                 
                 try{
                     SignUpForm signUpFrame = new SignUpForm();
+                    signUpFrame.setVisible(true);
                     frame.dispose();
                 } catch(IOException ex){
                     ex.printStackTrace();

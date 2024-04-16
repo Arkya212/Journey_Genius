@@ -27,10 +27,10 @@ public class PrePackage extends JFrame {
         ResultSet rs = null;
         ResultSet rs2 = null;
 
-        AppConfig.prePackageSelectId = 6;
-        AppConfig.text_city = "Kolkata";
-        AppConfig.priceOfItinerary = 1000;
-        AppConfig.text_days = 8;
+        // AppConfig.prePackageSelectId = 6;
+        // AppConfig.text_city = "Kolkata";
+        // AppConfig.priceOfItinerary = 1000;
+        // AppConfig.text_days = 8;
 
         con = ConnectionProvider.getConnection();
         String sql = "SELECT Total_Travel_Days, Feedback, Price, Package_ID FROM pre_package WHERE City = ?";
@@ -202,6 +202,45 @@ public class PrePackage extends JFrame {
                     AbstractButton button = buttons.nextElement();
                     if (button.isSelected()) {
                         AppConfig.prePackageSelectId = (int) button.getClientProperty("packid");
+                        Connection con = null;
+                        PreparedStatement pstmt = null;
+
+                        try {
+                            con = ConnectionProvider.getConnection();
+                            String sql = "INSERT INTO pre_itt (pre_id, itt_id) VALUES (?, ?)";
+                            pstmt = con.prepareStatement(sql);
+                            pstmt.setInt(1, AppConfig.prePackageSelectId); // Set the pre_id value
+                            pstmt.setInt(2, AppConfig.itineary_ID); // Set the itt_id value
+
+                            int rowsInserted = pstmt.executeUpdate();
+
+                            if (rowsInserted > 0) {
+                                System.out.println("Data inserted successfully!");
+                            } else {
+                                System.out.println("No rows inserted.");
+                            }
+
+                        } catch (SQLException ep) {
+                            System.err.println("Error executing SQL insert: " + ep.getMessage());
+                            ep.printStackTrace();
+                        } catch (Exception ep) {
+                            System.err.println("Error: " + ep.getMessage());
+                            ep.printStackTrace();
+                        } finally {
+                            try {
+                                if (pstmt != null) {
+                                    pstmt.close();
+                                }
+                                if (con != null) {
+                                    con.close();
+                                }
+                            } catch (SQLException ep) {
+                                System.err.println("Error closing connection: " + ep.getMessage());
+                                ep.printStackTrace();
+                            }
+                        }
+
+
                         System.out.println("Selected Pack ID: " + AppConfig.prePackageSelectId);
                         getPriceAndTotalTravelDays(data, AppConfig.prePackageSelectId);
                         System.out.println("Total Price" + AppConfig.prePackagePriceOfItinerary);

@@ -515,7 +515,7 @@ public class HotelRegistration extends JFrame {
         panel5.setPreferredSize(new Dimension(500, 30));
         JLabel label = new JLabel();
         label.setForeground(Color.green);
-        label.setText("Made with love by 10 marks");
+        label.setText("Welcome to Journey Genius");
         panel5.add(label);
 
         frame.add(panel1, BorderLayout.NORTH);
