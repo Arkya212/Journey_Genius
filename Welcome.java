@@ -147,14 +147,15 @@ public class Welcome extends JFrame{
         // JLabel googJLabel = new JLabel("GoogleImage");
         // googJLabel.setForeground(Color.WHITE);
         // Create image label
-        ImageIcon googleIcon = new ImageIcon("images/google.png"); // Path to Google icon image
+        ImageIcon googleIcon = new ImageIcon("images/linkedIN.png"); // Path to Google icon image
         JLabel googJLabel = new JLabel(googleIcon);
         googJLabel.setForeground(Color.WHITE);
         googJLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI("https://www.google.com"));
+                    Desktop.getDesktop().browse(new URI("https://www.linkedin.com/in/shreyansh-vanjani-28b198226/"));
+                    Desktop.getDesktop().browse(new URI("https://www.linkedin.com/in/arkya-aditya/"));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -195,7 +196,7 @@ public class Welcome extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI("https://www.google.com"));
+                    Desktop.getDesktop().browse(new URI("https://github.com/Arkya212/Journey_Genius"));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
