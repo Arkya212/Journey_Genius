@@ -54,25 +54,25 @@ public class CustomPackage extends JFrame {
 
         // AppConfig.text_city = "delhi";
         // AppConfig.text_days = 4;
-        try {
-            Connection con = ConnectionProvider.getConnection();
-            String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
-            PreparedStatement pstmt2 = con.prepareStatement(sq);
-            pstmt2.setString(1, AppConfig.text_name);
-            ResultSet rs = pstmt2.executeQuery();
+        // try {
+        //     Connection con = ConnectionProvider.getConnection();
+        //     String sq = "SELECT Itinerary_ID FROM itinerary WHERE Itinerary_Name = ?";
+        //     PreparedStatement pstmt2 = con.prepareStatement(sq);
+        //     pstmt2.setString(1, AppConfig.text_name);
+        //     ResultSet rs = pstmt2.executeQuery();
         
-            if (rs.next()) {
-                AppConfig.itineary_ID = rs.getInt("Itinerary_ID");
-            }
+        //     if (rs.next()) {
+        //         AppConfig.itineary_ID = rs.getInt("Itinerary_ID");
+        //     }
         
-            // Close resources
-            rs.close();
-            pstmt2.close();
-            con.close();
+        //     // Close resources
+        //     rs.close();
+        //     pstmt2.close();
+        //     con.close();
         
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
         
 
         System.out.println(AppConfig.itineary_ID);
@@ -383,7 +383,7 @@ public class CustomPackage extends JFrame {
 
                         // Close resources
                         insertPstmt.close();
-                        con.close();
+
 
                     } catch (SQLException ep) {
                         ep.printStackTrace();
@@ -396,7 +396,28 @@ public class CustomPackage extends JFrame {
                     subPanel22.repaint();
                     scheduleNumber++;
                     JOptionPane.showMessageDialog(null, "Itinerary created successfully.");
+                    
 
+                    try {
+                        String updateSql = "UPDATE itinerary SET price = ? WHERE Itinerary_ID = ?";
+                        PreparedStatement updatePstmt = con.prepareStatement(updateSql);
+                        updatePstmt.setInt(1, AppConfig.priceOfItinerary); // Set the price value
+                        updatePstmt.setInt(2, AppConfig.itineary_ID); // Set the Itinerary_ID value
+                        int rowsUpdated = updatePstmt.executeUpdate();
+                    
+                        if (rowsUpdated > 0) {
+                            System.out.println("Price updated successfully!");
+                        } else {
+                            System.out.println("No rows updated.");
+                        }
+                    } catch (SQLException epp) {
+                        System.err.println("Error executing SQL update: " + epp.getMessage());
+                        epp.printStackTrace();
+                    } catch (Exception ep) {
+                        System.err.println("Error: " + ep.getMessage());
+                        ep.printStackTrace();
+                    }
+                    
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             try {
