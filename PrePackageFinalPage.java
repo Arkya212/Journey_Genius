@@ -94,10 +94,9 @@ public class PrePackageFinalPage extends JFrame {
         // e.printStackTrace();
         // }
         Connection con1 = null; // Initialize to null
-        
+
         try {
             con1 = ConnectionProvider.getConnection();
-
 
             populateRestaurant(con1);
             populateHotel(con1);
@@ -230,7 +229,6 @@ public class PrePackageFinalPage extends JFrame {
             pstmt.setInt(1, AppConfig.prePackageSelectId);
             ResultSet rs = pstmt.executeQuery();
 
-
             while (rs.next()) {
                 String store = rs.getString("store");
                 itineraryData.add(store);
@@ -252,16 +250,38 @@ public class PrePackageFinalPage extends JFrame {
             dayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Connection c = ConnectionProvider.getConnection();
+            
+                    try {
+                        String sq = "SELECT price FROM pre_package WHERE package_ID = ?";
+                        PreparedStatement pst = c.prepareStatement(sq);
+                        pst.setInt(1, AppConfig.prePackageSelectId);
+                        ResultSet rs = pst.executeQuery();
+            
+                        if (rs.next()) { // Move the cursor to the first row
+                            AppConfig.prePackagePriceOfItinerary = rs.getInt("price");
+                            priceLabel.setText("Price: ₹" + AppConfig.prePackagePriceOfItinerary);
+                        }
+                    } catch (SQLException e1) {
+                        // Handle the exception
+                        e1.printStackTrace();
+                    } finally {
+                        // Close the connection
+                        try {
+                            if (c != null) {
+                                c.close();
+                            }
+                        } catch (SQLException ep) {
+                            ep.printStackTrace();
+                        }
+                    }
+            
                     JButton button = (JButton) e.getSource();
                     String buttonText = button.getText();
                     System.out.println("Day Number: " + buttonText.substring(4));
-                    // Write Method to get the Price of the Day
-                    priceLabel.setText("Price: ₹" + AppConfig.prePackagePriceOfItinerary);
                     AppConfig.stringItineraryFinal = resultStrings.get(index - 1);
                     System.out.println(AppConfig.stringItineraryFinal);
                     stringLabelFinalItninerary.setText(resultStrings.get(index - 1));
-                    // updatePanel3WithRandomText();
                 }
             });
             buttonGroup.add(dayButton);
@@ -350,7 +370,7 @@ public class PrePackageFinalPage extends JFrame {
 
     public void combineIntoResultStrings() {
         StringBuilder htmlContent = new StringBuilder("<html>");
-    
+
         // Check if all vectors have the same size
         int size = restaurantForAllDays.size(); // Assuming all vectors have the same size
         for (int i = 0; i < size; i++) {
@@ -359,16 +379,14 @@ public class PrePackageFinalPage extends JFrame {
             htmlContent.append(monumentsForAllDays.get(i)).append("<br>");
             htmlContent.append(cabsForAllDays.get(i)).append("<br>");
             htmlContent.append(miscForAllDays.get(i)).append("<br><br>");
-            
+
             htmlContent.append("</html>"); // Close the HTML tag after each row
             resultStrings.add(htmlContent.toString());
-            
+
             // Start a new HTML content for the next row
             htmlContent = new StringBuilder("<html>");
         }
     }
-    
-    
 
     public void populateRestaurant(Connection connection) throws SQLException {
         String sql = "select Name, Speciality, Avg_Price_for_2, Stars, Review from restaurants as r inner join reserves as re on r.Res_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
@@ -378,10 +396,10 @@ public class PrePackageFinalPage extends JFrame {
                 while (rs.next()) {
                     String row = "<b>Restaurant</b> <br>";
                     row += "Name: " + rs.getString("Name") + "<br> " +
-                                 "Speciality: " + rs.getString("Speciality") + "<br> " +
-                                 "Avg_Price_for_2: " + rs.getString("Avg_Price_for_2") + "<br>  " +
-                                 "Stars: " + rs.getString("Stars") + "<br>  " +
-                                 "Review: " + rs.getString("Review");
+                            "Speciality: " + rs.getString("Speciality") + "<br> " +
+                            "Avg_Price_for_2: " + rs.getString("Avg_Price_for_2") + "<br>  " +
+                            "Stars: " + rs.getString("Stars") + "<br>  " +
+                            "Review: " + rs.getString("Review");
                     restaurantForAllDays.add(row);
                 }
             }
@@ -396,11 +414,11 @@ public class PrePackageFinalPage extends JFrame {
                 while (rs.next()) {
                     String row = "<b>Hotel</b> <br>";
                     row += "Name: " + rs.getString("Name") + "<br> " +
-                           "Rating: " + rs.getString("Rating") + "<br> " +
-                           "Price: " + rs.getString("Price") + "<br>  " +
-                           "Amenities: " + rs.getString("Amenities") + "<br>  " +
-                           "Telephone: " + rs.getString("Telephone") + "<br>  " +
-                           "Review: " + rs.getString("Review");
+                            "Rating: " + rs.getString("Rating") + "<br> " +
+                            "Price: " + rs.getString("Price") + "<br>  " +
+                            "Amenities: " + rs.getString("Amenities") + "<br>  " +
+                            "Telephone: " + rs.getString("Telephone") + "<br>  " +
+                            "Review: " + rs.getString("Review");
                     hotelForAllDays.add(row);
                 }
             }
@@ -415,12 +433,12 @@ public class PrePackageFinalPage extends JFrame {
                 while (rs.next()) {
                     String row = "<b>Monument</b> <br>";
                     row += "Name: " + rs.getString("name") + "<br> " +
-                           "Price: " + rs.getString("Price") + "<br> " +
-                           "About: " + rs.getString("About") + "<br>  " +
-                           "City: " + rs.getString("City") + "<br>  " +
-                           "Longitude: " + rs.getString("Longitude") + "<br>  " +
-                           "Latitude: " + rs.getString("Latitude") + "<br>  " +
-                           "Review: " + rs.getString("Review");
+                            "Price: " + rs.getString("Price") + "<br> " +
+                            "About: " + rs.getString("About") + "<br>  " +
+                            "City: " + rs.getString("City") + "<br>  " +
+                            "Longitude: " + rs.getString("Longitude") + "<br>  " +
+                            "Latitude: " + rs.getString("Latitude") + "<br>  " +
+                            "Review: " + rs.getString("Review");
                     monumentsForAllDays.add(row);
                 }
             }
@@ -435,13 +453,13 @@ public class PrePackageFinalPage extends JFrame {
                 while (rs.next()) {
                     String row = "<b>Cab </b><br>";
                     row += "First_Name: " + rs.getString("First_Name") + "<br> " +
-                           "Last_Name: " + rs.getString("Last_Name") + "<br> " +
-                           "Cab_Number: " + rs.getString("Cab_Number") + "<br>  " +
-                           "Cab_Type: " + rs.getString("Cab_Type") + "<br>  " +
-                           "Phone_Number: " + rs.getString("Phone_Number") + "<br>  " +
-                           "Price: " + rs.getString("Price") + "<br>  " +
-                           "Review: " + rs.getString("Review") + "<br>  " +
-                           "City: " + rs.getString("city");
+                            "Last_Name: " + rs.getString("Last_Name") + "<br> " +
+                            "Cab_Number: " + rs.getString("Cab_Number") + "<br>  " +
+                            "Cab_Type: " + rs.getString("Cab_Type") + "<br>  " +
+                            "Phone_Number: " + rs.getString("Phone_Number") + "<br>  " +
+                            "Price: " + rs.getString("Price") + "<br>  " +
+                            "Review: " + rs.getString("Review") + "<br>  " +
+                            "City: " + rs.getString("city");
                     cabsForAllDays.add(row);
                 }
             }
@@ -456,8 +474,8 @@ public class PrePackageFinalPage extends JFrame {
                 while (rs.next()) {
                     String row = "<b>Miscellaneous </b><br>";
                     row += "Name: " + rs.getString("Name") + "<br> " +
-                           "Review: " + rs.getString("Review") + "<br> " +
-                           "Price: " + rs.getString("Price");
+                            "Review: " + rs.getString("Review") + "<br> " +
+                            "Price: " + rs.getString("Price");
                     miscForAllDays.add(row);
                 }
             }
