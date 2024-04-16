@@ -19,7 +19,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
-
 public class PrePackageFinalPage extends JFrame {
     private static JLabel stringLabelFinalItninerary;
     Vector<String> resultStrings = new Vector<>();
@@ -52,38 +51,79 @@ public class PrePackageFinalPage extends JFrame {
         ResultSet rs5 = null;
         ResultSet rs6 = null;
 
-        con2 = ConnectionProvider.getConnection();
-        String sqlr = "select Name, Speciality , Avg_Price_for_2 , Stars, Review  from restaurants as r inner join reserves as re on r.Res_ID =  re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
-        String sqlh = "select Name , Rating , h.Price , Amenities, Telephone , Review  from hotel as h inner join reserves as re on h.Hotel_ID =  re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
-        String sqlc = "select First_Name , Last_Name , Cab_Number , Cab_Type , Phone_Number , c.Price ,Review , c.city from cab as c inner join reserves as re on c.Cab_ID =  re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
-        String sqlm = "select name , m.Price , About , m.City , Longitude , Latitude , Review from museums_and_monuments as m inner join reserves as re on m.Monu_ID =  re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
-        String sqlmis = "select Name , Review , m.Price from miscellaneous as m inner join reserves as re on m.Misc_ID =  re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ? ";
+        // con2 = ConnectionProvider.getConnection();
+        // String sqlr = "select Name, Speciality , Avg_Price_for_2 , Stars, Review from
+        // restaurants as r inner join reserves as re on r.Res_ID = re.Res_ID inner join
+        // days as d on re.Day_ID = d.Day_ID inner join pre_package as p on
+        // d.Package_ID=p.Package_ID where p.Package_ID = ?";
+        // String sqlh = "select Name , Rating , h.Price , Amenities, Telephone , Review
+        // from hotel as h inner join reserves as re on h.Hotel_ID = re.Res_ID inner
+        // join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on
+        // d.Package_ID=p.Package_ID where p.Package_ID = ?";
+        // String sqlc = "select First_Name , Last_Name , Cab_Number , Cab_Type ,
+        // Phone_Number , c.Price ,Review , c.city from cab as c inner join reserves as
+        // re on c.Cab_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner
+        // join pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
+        // String sqlm = "select name , m.Price , About , m.City , Longitude , Latitude
+        // , Review from museums_and_monuments as m inner join reserves as re on
+        // m.Monu_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join
+        // pre_package as p on d.Package_ID=p.Package_ID where p.Package_ID = ?";
+        // String sqlmis = "select Name , Review , m.Price from miscellaneous as m inner
+        // join reserves as re on m.Misc_ID = re.Res_ID inner join days as d on
+        // re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID=p.Package_ID
+        // where p.Package_ID = ? ";
 
-        pstmt2 = con2.prepareStatement(sqlr);
-        pstmt3 = con2.prepareStatement(sqlh);
-        pstmt4 = con2.prepareStatement(sqlc);
-        pstmt5 = con2.prepareStatement(sqlm);
-        pstmt6 = con2.prepareStatement(sqlmis);
-        pstmt2.setInt(1, AppConfig.prePackageSelectId);
-        pstmt3.setInt(1, AppConfig.prePackageSelectId);
-        pstmt4.setInt(1, AppConfig.prePackageSelectId);
-        pstmt5.setInt(1, AppConfig.prePackageSelectId);
-        pstmt6.setInt(1, AppConfig.prePackageSelectId);
-        rs2 = pstmt2.executeQuery();
-        rs3 = pstmt3.executeQuery();
-        rs4 = pstmt4.executeQuery();
-        rs5 = pstmt5.executeQuery();
-        rs6 = pstmt6.executeQuery();
-
-        while (rs2.next()) {
-            Vector<String> row = new Vector();
-            row.add(rs.getString("Package_ID"));
-            row.add(rs.getString("Total_Travel_Days"));
-            row.add(rs.getString("Feedback"));
-            row.add(rs.getString("Price"));
-            data.add(row);
-        }
+        // try {
+        // pstmt2 = con2.prepareStatement(sqlr);
+        // pstmt3 = con2.prepareStatement(sqlh);
+        // pstmt4 = con2.prepareStatement(sqlc);
+        // pstmt5 = con2.prepareStatement(sqlm);
+        // pstmt6 = con2.prepareStatement(sqlmis);
+        // pstmt2.setInt(1, AppConfig.prePackageSelectId);
+        // pstmt3.setInt(1, AppConfig.prePackageSelectId);
+        // pstmt4.setInt(1, AppConfig.prePackageSelectId);
+        // pstmt5.setInt(1, AppConfig.prePackageSelectId);
+        // pstmt6.setInt(1, AppConfig.prePackageSelectId);
+        // rs2 = pstmt2.executeQuery();
+        // rs3 = pstmt3.executeQuery();
+        // rs4 = pstmt4.executeQuery();
+        // rs5 = pstmt5.executeQuery();
+        // rs6 = pstmt6.executeQuery();
+        // } catch (SQLException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        Connection con1 = null; // Initialize to null
         
+        try {
+            con1 = ConnectionProvider.getConnection();
+
+
+            populateRestaurant(con1);
+            populateHotel(con1);
+            populateMonuments(con1);
+            populateCabs(con1);
+            populateMisc(con1);
+
+        } catch (SQLException e) {
+            System.err.println("Error connecting to the database: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (con1 != null) {
+                    con1.close(); // Closing the database connection
+                }
+            } catch (SQLException e) {
+                System.err.println("Error closing the database connection: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        combineIntoResultStrings();
+
+        for (String result : resultStrings) {
+            System.out.println(result);
+        }
 
         // AppConfig.itineary_ID = 39;
         // AppConfig.text_days = 3;
@@ -166,6 +206,7 @@ public class PrePackageFinalPage extends JFrame {
                 try {
                     @SuppressWarnings("unused")
                     PrePackage prePackage = new PrePackage();
+                    // resultStrings.clear();
                     frame.dispose();
                 } catch (IOException | SQLException exp) {
                     exp.printStackTrace();
@@ -188,6 +229,7 @@ public class PrePackageFinalPage extends JFrame {
             PreparedStatement pstmt = con.prepareStatement(sq);
             pstmt.setInt(1, AppConfig.prePackageSelectId);
             ResultSet rs = pstmt.executeQuery();
+
 
             while (rs.next()) {
                 String store = rs.getString("store");
@@ -215,10 +257,10 @@ public class PrePackageFinalPage extends JFrame {
                     String buttonText = button.getText();
                     System.out.println("Day Number: " + buttonText.substring(4));
                     // Write Method to get the Price of the Day
-                    priceLabel.setText("Price: ₹" + AppConfig.priceOfItinerary);
-                    AppConfig.stringItineraryFinal = itineraryData.get(index - 1);
+                    priceLabel.setText("Price: ₹" + AppConfig.prePackagePriceOfItinerary);
+                    AppConfig.stringItineraryFinal = resultStrings.get(index - 1);
                     System.out.println(AppConfig.stringItineraryFinal);
-                    stringLabelFinalItninerary.setText(resultStrings.get(index - 1)); // Update label from resultStrings
+                    stringLabelFinalItninerary.setText(resultStrings.get(index - 1));
                     // updatePanel3WithRandomText();
                 }
             });
@@ -308,39 +350,118 @@ public class PrePackageFinalPage extends JFrame {
 
     public void combineIntoResultStrings() {
         StringBuilder htmlContent = new StringBuilder("<html>");
-
+    
         // Check if all vectors have the same size
         int size = restaurantForAllDays.size(); // Assuming all vectors have the same size
         for (int i = 0; i < size; i++) {
-            htmlContent.append("<b>").append(restaurantForAllDays.get(i)).append("</b><br>");
+            htmlContent.append(restaurantForAllDays.get(i)).append("<br>");
             htmlContent.append(hotelForAllDays.get(i)).append("<br>");
             htmlContent.append(monumentsForAllDays.get(i)).append("<br>");
             htmlContent.append(cabsForAllDays.get(i)).append("<br>");
             htmlContent.append(miscForAllDays.get(i)).append("<br><br>");
+            
+            htmlContent.append("</html>"); // Close the HTML tag after each row
+            resultStrings.add(htmlContent.toString());
+            
+            // Start a new HTML content for the next row
+            htmlContent = new StringBuilder("<html>");
         }
-
-        htmlContent.append("</html>");
-        resultStrings.add(htmlContent.toString());
     }
+    
+    
 
     public void populateRestaurant(Connection connection) throws SQLException {
-        // Write here
+        String sql = "select Name, Speciality, Avg_Price_for_2, Stars, Review from restaurants as r inner join reserves as re on r.Res_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, AppConfig.prePackageSelectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String row = "<b>Restaurant</b> <br>";
+                    row += "Name: " + rs.getString("Name") + "<br> " +
+                                 "Speciality: " + rs.getString("Speciality") + "<br> " +
+                                 "Avg_Price_for_2: " + rs.getString("Avg_Price_for_2") + "<br>  " +
+                                 "Stars: " + rs.getString("Stars") + "<br>  " +
+                                 "Review: " + rs.getString("Review");
+                    restaurantForAllDays.add(row);
+                }
+            }
+        }
     }
 
     public void populateHotel(Connection connection) throws SQLException {
-        // Write similar code for populating the hotelForAllDays vector
+        String sql = "select Name, Rating, h.Price, Amenities, Telephone, Review from hotel as h inner join reserves as re on h.Hotel_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, AppConfig.prePackageSelectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String row = "<b>Hotel</b> <br>";
+                    row += "Name: " + rs.getString("Name") + "<br> " +
+                           "Rating: " + rs.getString("Rating") + "<br> " +
+                           "Price: " + rs.getString("Price") + "<br>  " +
+                           "Amenities: " + rs.getString("Amenities") + "<br>  " +
+                           "Telephone: " + rs.getString("Telephone") + "<br>  " +
+                           "Review: " + rs.getString("Review");
+                    hotelForAllDays.add(row);
+                }
+            }
+        }
     }
 
     public void populateMonuments(Connection connection) throws SQLException {
-        // Write similar code for populating the monumentsForAllDays vector
+        String sql = "select name, m.Price, About, m.City, Longitude, Latitude, Review from museums_and_monuments as m inner join reserves as re on m.Monu_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, AppConfig.prePackageSelectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String row = "<b>Monument</b> <br>";
+                    row += "Name: " + rs.getString("name") + "<br> " +
+                           "Price: " + rs.getString("Price") + "<br> " +
+                           "About: " + rs.getString("About") + "<br>  " +
+                           "City: " + rs.getString("City") + "<br>  " +
+                           "Longitude: " + rs.getString("Longitude") + "<br>  " +
+                           "Latitude: " + rs.getString("Latitude") + "<br>  " +
+                           "Review: " + rs.getString("Review");
+                    monumentsForAllDays.add(row);
+                }
+            }
+        }
     }
 
     public void populateCabs(Connection connection) throws SQLException {
-        // Write similar code for populating the cabsForAllDays vector
+        String sql = "select First_Name, Last_Name, Cab_Number, Cab_Type, Phone_Number, c.Price, Review, c.city from cab as c inner join reserves as re on c.Cab_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, AppConfig.prePackageSelectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String row = "<b>Cab </b><br>";
+                    row += "First_Name: " + rs.getString("First_Name") + "<br> " +
+                           "Last_Name: " + rs.getString("Last_Name") + "<br> " +
+                           "Cab_Number: " + rs.getString("Cab_Number") + "<br>  " +
+                           "Cab_Type: " + rs.getString("Cab_Type") + "<br>  " +
+                           "Phone_Number: " + rs.getString("Phone_Number") + "<br>  " +
+                           "Price: " + rs.getString("Price") + "<br>  " +
+                           "Review: " + rs.getString("Review") + "<br>  " +
+                           "City: " + rs.getString("city");
+                    cabsForAllDays.add(row);
+                }
+            }
+        }
     }
 
     public void populateMisc(Connection connection) throws SQLException {
-        // Write similar code for populating the miscForAllDays vector
+        String sql = "select Name, Review, m.Price from miscellaneous as m inner join reserves as re on m.Misc_ID = re.Res_ID inner join days as d on re.Day_ID = d.Day_ID inner join pre_package as p on d.Package_ID = p.Package_ID where p.Package_ID = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, AppConfig.prePackageSelectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String row = "<b>Miscellaneous </b><br>";
+                    row += "Name: " + rs.getString("Name") + "<br> " +
+                           "Review: " + rs.getString("Review") + "<br> " +
+                           "Price: " + rs.getString("Price");
+                    miscForAllDays.add(row);
+                }
+            }
+        }
     }
 }
 

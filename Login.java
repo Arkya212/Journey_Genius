@@ -33,8 +33,8 @@ public class Login extends JFrame {
         PreparedStatement pstmt = con.prepareStatement(sql);
 
         frame = new JFrame("Login Form");
-        email = new JTextField("john@example.com");
-        password = new JPasswordField("password1");
+        email = new JTextField("Enter your Email");
+        password = new JPasswordField("Password");
         loginButton = new JButton("LOGIN");
         usernameError = new JLabel();
         passwordError = new JLabel();

@@ -92,35 +92,23 @@ public class FinalPage extends JFrame {
         panel1.add(subPanel21, BorderLayout.CENTER);
 
         // SubPanel 3 Layout
-        // JButton backButton = new JButton("Back");
-        // backButton.setPreferredSize(new Dimension(100, 90));
-        // backButton.setBackground(Color.GRAY);
-        // backButton.setFont(new Font("Arial", Font.BOLD, 18));
-        // backButton.setForeground(Color.white);
-        // subPanel31.add(backButton);
-        // backButton.addActionListener(new ActionListener() {
-        // @Override
-        // public void actionPerformed(ActionEvent e) {
-        // if (AppConfig.previousPage.equals("FinalCustomPage")) {
-        // try {
-        // CustomPackage customPackage = new CustomPackage();
-        // } catch (IOException exp) {
-        // // Handle the IOException here
-        // exp.printStackTrace();
-        // } catch (SQLException e1) {
-        // // TODO Auto-generated catch block
-        // e1.printStackTrace();
-        // }
-        // } else {
-        // // try {
-        // // PrePackage prePackage = new PrePackage();
-        // // } catch (IOException exp){
-        // // // Handle the IOException here
-        // // exp.printStackTrace();
-        // // }
-        // }
-        // }
-        // });
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(100, 90));
+        backButton.setBackground(Color.GRAY);
+        backButton.setFont(new Font("Arial", Font.BOLD, 18));
+        backButton.setForeground(Color.white);
+        subPanel31.add(backButton);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PlanPage planPage = new PlanPage();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
         panel1.add(subPanel31, BorderLayout.EAST);
         frame.add(panel1, BorderLayout.NORTH);
 
@@ -159,14 +147,14 @@ public class FinalPage extends JFrame {
             dayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    
+
                     try {
                         Connection con = ConnectionProvider.getConnection();
                         String sq = "SELECT price FROM itinerary WHERE Itinerary_Id = ?";
                         PreparedStatement pstmt2 = con.prepareStatement(sq);
                         pstmt2.setInt(1, AppConfig.itineary_ID);
                         ResultSet rs = pstmt2.executeQuery();
-                    
+
                         if (rs.next()) {
                             AppConfig.priceOfItinerary = rs.getInt("price");
                         }
@@ -175,9 +163,6 @@ public class FinalPage extends JFrame {
                     } catch (Exception ep) {
                         ep.printStackTrace();
                     }
-                    
-
-
 
                     JButton button = (JButton) e.getSource();
                     String buttonText = button.getText();
@@ -225,17 +210,17 @@ public class FinalPage extends JFrame {
 
         panel3.setLayout(new GridLayout(1, 1));
         panel3.setBackground(Color.WHITE);
-        
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBackground(Color.BLACK);
         scrollPane.setOpaque(true);
         panel3.add(scrollPane, 0, 0);
-        
+
         stringLabelFinalItninerary = new JLabel(AppConfig.stringItineraryFinal);
         stringLabelFinalItninerary.setFont(new Font("Monospaced", Font.PLAIN, 16));
         stringLabelFinalItninerary.setHorizontalAlignment(SwingConstants.CENTER);
         stringLabelFinalItninerary.setForeground(Color.BLACK);
-        
+
         scrollPane.setViewportView(stringLabelFinalItninerary);
         // JButton confirmButton = new JButton("Confirm Your Payment");
 

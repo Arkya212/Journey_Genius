@@ -20,9 +20,9 @@ public class PlanPage extends JFrame {
 
     public PlanPage() throws IOException {
         ArrayList<String> validCities = new ArrayList<>();
-        validCities.add("banglore");
+        validCities.add("bangalore");
         validCities.add("mumbai");
-        validCities.add("chennai");
+        validCities.add("delhi");
 
         JFrame frame = new JFrame("Plan Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -203,7 +203,8 @@ public class PlanPage extends JFrame {
                     Date currentDate = new Date();
 
                     if (enteredDate.after(currentDate)) {
-                        AppConfig.text_Start = dateFormat.format(enteredDate);;
+                        AppConfig.text_Start = dateFormat.format(enteredDate);
+                        ;
                         System.out.println("Valid date: " + AppConfig.text_Start);
                     } else {
                         System.out.println("Invalid date: " + enteredDate);
@@ -217,7 +218,6 @@ public class PlanPage extends JFrame {
                 }
             }
         });
-
 
         // Create and add label for "total days"
         JLabel label3 = new JLabel("Number of days");
@@ -258,7 +258,8 @@ public class PlanPage extends JFrame {
                     System.out.println("Integer entered: " + AppConfig.text_days);
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid input. Please enter an integer.");
-                    JOptionPane.showMessageDialog(frame, "Invalid input. Please enter an integer.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Invalid input. Please enter an integer.", "Warning",
+                            JOptionPane.WARNING_MESSAGE);
                     textField3.setText(""); // Clear the text field
                 }
             }
@@ -389,6 +390,7 @@ public class PlanPage extends JFrame {
 
                     if (rs.next()) {
                         String imagePath = rs.getString("Image_URl");
+                        System.out.println("Imge: "+ imagePath);
                         String description = rs.getString("Information");
                         ImageIcon cityImageIcon = new ImageIcon(imagePath);
                         Image cityImg = cityImageIcon.getImage();
@@ -429,7 +431,7 @@ public class PlanPage extends JFrame {
 
                 try {
                     con = ConnectionProvider.getConnection();
-                    String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days, City_Name, User_ID) VALUES (?, ?, ?, ?, ?)";
+                    String sql = "INSERT INTO itinerary (Itinerary_Name, Start_Date, no_of_days ,City_Name, User_ID) VALUES (?, ?, ?,?, ?)";
                     pstmt = con.prepareStatement(sql);
                     pstmt.setString(1, AppConfig.text_name);
                     pstmt.setString(2, AppConfig.text_Start);
@@ -472,20 +474,19 @@ public class PlanPage extends JFrame {
                     PreparedStatement pstmt2 = cont.prepareStatement(sq);
                     pstmt2.setString(1, AppConfig.text_name);
                     ResultSet rs2 = pstmt2.executeQuery();
-                
+
                     if (rs2.next()) {
                         AppConfig.itineary_ID = rs2.getInt("Itinerary_ID");
                     }
-                
+
                     // Close resources
                     rs2.close();
                     pstmt2.close();
                     con.close();
-                
+
                 } catch (SQLException ep) {
                     ep.printStackTrace();
                 }
-
 
             }
         });
@@ -536,16 +537,16 @@ public class PlanPage extends JFrame {
                     PreparedStatement pstmt2 = cont.prepareStatement(sq);
                     pstmt2.setString(1, AppConfig.text_name);
                     ResultSet rs2 = pstmt2.executeQuery();
-                
+
                     if (rs2.next()) {
                         AppConfig.itineary_ID = rs2.getInt("Itinerary_ID");
                     }
-                
+
                     // Close resources
                     rs2.close();
                     pstmt2.close();
                     con.close();
-                
+
                 } catch (SQLException ep) {
                     ep.printStackTrace();
                 }
@@ -715,22 +716,34 @@ public class PlanPage extends JFrame {
                 int day_count = -1;
 
                 try (Connection con = ConnectionProvider.getConnection();
-                        PreparedStatement pstmt = con.prepareStatement(
-                                "SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
-
+                    PreparedStatement pstmt = con.prepareStatement("SELECT Itinerary_ID , no_of_days FROM Itinerary WHERE Itinerary_Name = ?")) {
                     pstmt.setString(1, selectedItineraryName);
 
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
                             selectedItineraryID = rs.getInt("Itinerary_ID");
                             day_count = rs.getInt("no_of_days");
+                            System.out.println(day_count);
 
                         }
-                        if (selectedItineraryID != -1 && day_count != -1) {
+
+                        PreparedStatement pstmt2 = con.prepareStatement("SELECT pre_id FROM pre_itt WHERE itt_id = ?");
+                        pstmt2.setInt(1, selectedItineraryID);
+                        ResultSet rs2 = pstmt2.executeQuery();
+                        if (rs2.next()) {
+                            if (selectedItineraryID != -1 && day_count != -1){
+                                AppConfig.prePackageSelectId = rs2.getInt("pre_id");
+                                AppConfig.itineary_ID = selectedItineraryID;
+                                AppConfig.prePackagetext_days = day_count;
+                                System.out.println(AppConfig.numberOfButtons);
+                                
+                                PrePackageFinalPage prePackageFinalPage = new PrePackageFinalPage();
+                            }
+
+                        }else if (selectedItineraryID != -1 && day_count != -1) {
                             AppConfig.itineary_ID = selectedItineraryID;
                             AppConfig.text_days = day_count;
-                            FinalPage nextPage = new FinalPage();
-                            nextPage.setVisible(true);
+                            FinalPage FinalPage = new FinalPage();
                             // Close or hide the current frame if needed
                         } else {
                             // Handle the case where the selected itinerary ID is not found
@@ -783,9 +796,7 @@ public class PlanPage extends JFrame {
             }
         });
 
-
     }
-    
 
     public static JRadioButton generateRadioButton(String labelText) {
         JRadioButton radioButton = new JRadioButton(labelText);
