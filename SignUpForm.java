@@ -1,20 +1,19 @@
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.awt.Color;
-import java.text.ParseException;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.text.SimpleDateFormat;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class SignUpForm extends JFrame {
     private JTextField firstName = new JTextField("Enter your First Name");
@@ -457,6 +456,7 @@ public class SignUpForm extends JFrame {
                         if (rowsAffected > 0) {
                             JOptionPane.showMessageDialog(SignUpForm.this, "Successfully Registered!!!", "Success",
                                     JOptionPane.INFORMATION_MESSAGE);
+                            @SuppressWarnings("unused")
                             Welcome welcomeFrame = new Welcome();
                             dispose(); // Close the current SignUpForm
                         } else {
@@ -494,39 +494,35 @@ public class SignUpForm extends JFrame {
 
         });
 
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                firstNameFirstFocus = true;
-                lastNameFirstFocus = true;
-                mobileFieldFirstFocus = true;
-                sexFieldFirstFocus = true;
-                dobFieldFirstFocus = true;
-                cityFieldFirstFocus = true;
-                emailFirstFocus = true;
-                passwordFirstFocus = true;
-                nameError.setText("");
-                passwordError.setText("");
-                usernameError.setText("");
-                firstName.setText("Enter your First Name");
-                lastName.setText("Enter your Last Name");
-                mobileField.setText("Mobile Number");
-                dobField.setText("YYYY-MM-DD");
-                sexField.setText("Male/ Female/ Others");
-                cityField.setText("City you live in");
-                email.setText("Email Address");
-                password.setText("Set Password");
-
-                System.out.println("First Name: " + finalfirstNameString);
-                System.out.println("Last Name: " + finallastNameString);
-                System.out.println("Mobile: " + finalmobileFieldString);
-                System.out.println("Sex: " + finalsexString);
-                System.out.println("Date of Birth: " + finaldobFString);
-                System.out.println("City: " + finalcityString);
-                System.out.println("Email: " + finalemailString);
-                System.out.println("Password: " + finalpasswordString);
-            }
-
+        resetButton.addActionListener((ActionEvent e) -> {
+            firstNameFirstFocus = true;
+            lastNameFirstFocus = true;
+            mobileFieldFirstFocus = true;
+            sexFieldFirstFocus = true;
+            dobFieldFirstFocus = true;
+            cityFieldFirstFocus = true;
+            emailFirstFocus = true;
+            passwordFirstFocus = true;
+            nameError.setText("");
+            passwordError.setText("");
+            usernameError.setText("");
+            firstName.setText("Enter your First Name");
+            lastName.setText("Enter your Last Name");
+            mobileField.setText("Mobile Number");
+            dobField.setText("YYYY-MM-DD");
+            sexField.setText("Male/ Female/ Others");
+            cityField.setText("City you live in");
+            email.setText("Email Address");
+            password.setText("Set Password");
+            
+            System.out.println("First Name: " + finalfirstNameString);
+            System.out.println("Last Name: " + finallastNameString);
+            System.out.println("Mobile: " + finalmobileFieldString);
+            System.out.println("Sex: " + finalsexString);
+            System.out.println("Date of Birth: " + finaldobFString);
+            System.out.println("City: " + finalcityString);
+            System.out.println("Email: " + finalemailString);
+            System.out.println("Password: " + finalpasswordString);
         });
 
         // Create the panel for the form
