@@ -33,5 +33,3 @@ Contributions to this project are welcome! Feel free to fork the repository, mak
 
 License
 This project is licensed under the MIT License. Feel free to use, modify, and distribute the code as per the terms of the license.
-
-

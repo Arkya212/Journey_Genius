@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
-
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -20,7 +18,6 @@ public class Main {
         // try {
         //     CustomTry customTry = new CustomTry();
         // } catch (IOException | SQLException e) {
-        //     // TODO Auto-generated catch block
         //     e.printStackTrace();
         // }
 
